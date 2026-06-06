@@ -3,20 +3,19 @@
  * SCRIPT ADMINISTRATIVO
  * =====================================
  * Gerencia o painel administrativo
+ * Integra cadastro de jogos com Google Sheets
  */
 
 const SENHA_ADMIN = 'admin123';
 let jogoEmEdicao = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar se está logado
     if (estaLogado()) {
         mostrarAdmin();
     } else {
         mostrarLogin();
     }
 
-    // Setup abas
     setupAbas();
 });
 
@@ -79,21 +78,20 @@ function setupAbas() {
 }
 
 function trocarAba(nomeAba) {
-    // Ocultar todas as abas
     document.querySelectorAll('.admin-tab-content').forEach(el => {
         el.classList.remove('active');
     });
 
-    // Remover active dos botões
     document.querySelectorAll('.admin-tab').forEach(el => {
         el.classList.remove('active');
     });
 
-    // Mostrar aba ativa
     document.getElementById(nomeAba + '-tab').classList.add('active');
-    event.target.classList.add('active');
 
-    // Carregar dados da aba
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+
     if (nomeAba === 'dashboard') {
         carregarDashboard();
     } else if (nomeAba === 'jogos') {
@@ -132,6 +130,33 @@ function carregarDashboard() {
 }
 
 // =====================================
+// GOOGLE SHEETS
+// =====================================
+
+async function enviarJogoParaPlanilha(jogo) {
+    if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
+        console.error('GOOGLE_SCRIPT_URL não encontrada no script.js');
+        return false;
+    }
+
+    try {
+        await fetch(`${GOOGLE_SCRIPT_URL}?action=adicionar_jogo`, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify(jogo)
+        });
+
+        return true;
+    } catch (erro) {
+        console.error('Erro ao enviar jogo para Google Sheets:', erro);
+        return false;
+    }
+}
+
+// =====================================
 // GERENCIAR JOGOS
 // =====================================
 
@@ -144,7 +169,6 @@ function carregarListaJogos() {
         return;
     }
 
-    // Agrupar por fase
     const agrupado = {};
     jogos.forEach(jogo => {
         if (!agrupado[jogo.fase]) {
@@ -168,8 +192,8 @@ function carregarListaJogos() {
                     </small>
                 </div>
                 <div class="jogo-actions">
-                    <button class="btn btn-secondary btn-small" onclick="editarJogo(${jogo.id})">✏️ Editar</button>
-                    <button class="btn btn-danger btn-small" onclick="deletarJogo(${jogo.id})">🗑️ Deletar</button>
+                    <button class="btn btn-secondary btn-small" onclick="editarJogo(${Number(jogo.id)})">✏️ Editar</button>
+                    <button class="btn btn-danger btn-small" onclick="deletarJogo(${Number(jogo.id)})">🗑️ Deletar</button>
                 </div>
             </div>
         `).join('');
@@ -178,7 +202,7 @@ function carregarListaJogos() {
     container.innerHTML = html;
 }
 
-function salvarJogo(event) {
+async function salvarJogo(event) {
     event.preventDefault();
 
     const fase = document.getElementById('form-fase').value;
@@ -197,8 +221,8 @@ function salvarJogo(event) {
     let jogos = obterDados('jogos') || [];
 
     if (jogoEmEdicao) {
-        // Editar
-        const index = jogos.findIndex(j => j.id === jogoEmEdicao);
+        const index = jogos.findIndex(j => Number(j.id) === Number(jogoEmEdicao));
+
         if (index !== -1) {
             jogos[index] = {
                 ...jogos[index],
@@ -210,12 +234,15 @@ function salvarJogo(event) {
                 local,
                 ativo
             };
-            alert('✅ Jogo atualizado!');
+
+            salvarDados('jogos', jogos);
+
+            alert('✅ Jogo atualizado no navegador.\n\nPara atualizar na planilha, edite a linha diretamente no Google Sheets.');
         }
     } else {
-        // Criar novo
-        const novoId = jogos.length > 0 ? Math.max(...jogos.map(j => j.id)) + 1 : 1;
-        jogos.push({
+        const novoId = jogos.length > 0 ? Math.max(...jogos.map(j => Number(j.id) || 0)) + 1 : 1;
+
+        const novoJogo = {
             id: novoId,
             fase,
             time_a,
@@ -225,11 +252,20 @@ function salvarJogo(event) {
             local,
             ativo,
             resultado: null
-        });
-        alert('✅ Jogo criado!');
+        };
+
+        jogos.push(novoJogo);
+        salvarDados('jogos', jogos);
+
+        const enviado = await enviarJogoParaPlanilha(novoJogo);
+
+        if (enviado) {
+            alert('✅ Jogo criado e enviado para a planilha!');
+        } else {
+            alert('⚠️ Jogo criado no navegador, mas não consegui enviar para a planilha.');
+        }
     }
 
-    salvarDados('jogos', jogos);
     limparFormJogo();
     carregarListaJogos();
     carregarDashboard();
@@ -237,7 +273,7 @@ function salvarJogo(event) {
 
 function editarJogo(jogoId) {
     const jogos = obterDados('jogos') || [];
-    const jogo = jogos.find(j => j.id === jogoId);
+    const jogo = jogos.find(j => Number(j.id) === Number(jogoId));
 
     if (!jogo) {
         alert('Jogo não encontrado!');
@@ -250,7 +286,7 @@ function editarJogo(jogoId) {
     document.getElementById('form-data').value = jogo.data;
     document.getElementById('form-hora').value = jogo.hora;
     document.getElementById('form-local').value = jogo.local;
-    document.getElementById('form-ativo').value = jogo.ativo.toString();
+    document.getElementById('form-ativo').value = String(jogo.ativo);
 
     jogoEmEdicao = jogoId;
 
@@ -265,20 +301,20 @@ function limparFormJogo() {
 }
 
 function deletarJogo(jogoId) {
-    if (!confirm('Tem certeza? Os palpites deste jogo também serão deletados.')) {
+    if (!confirm('Tem certeza? Os palpites deste jogo também serão deletados apenas neste navegador.')) {
         return;
     }
 
     let jogos = obterDados('jogos') || [];
     let palpites = obterDados('palpites') || [];
 
-    jogos = jogos.filter(j => j.id !== jogoId);
-    palpites = palpites.filter(p => p.jogo_id !== jogoId);
+    jogos = jogos.filter(j => Number(j.id) !== Number(jogoId));
+    palpites = palpites.filter(p => Number(p.jogo_id) !== Number(jogoId));
 
     salvarDados('jogos', jogos);
     salvarDados('palpites', palpites);
 
-    alert('✅ Jogo deletado!');
+    alert('✅ Jogo deletado do navegador.\n\nSe ele estiver na planilha, delete a linha manualmente no Google Sheets.');
     carregarListaJogos();
     carregarDashboard();
 }
@@ -296,7 +332,7 @@ function carregarSelectResultados() {
 
     const jogosDisponiveis = jogos.filter(j => {
         const dataJogo = new Date(j.data + 'T' + j.hora);
-        return dataJogo <= agora; // Apenas jogos que já passaram
+        return dataJogo <= agora;
     });
 
     jogosDisponiveis.forEach(jogo => {
@@ -307,10 +343,11 @@ function carregarSelectResultados() {
         select.appendChild(option);
     });
 
-    select.addEventListener('change', function() {
+    select.onchange = function() {
         if (!this.value) return;
 
-        const jogo = jogos.find(j => j.id == this.value);
+        const jogo = jogos.find(j => Number(j.id) === Number(this.value));
+
         if (jogo) {
             document.getElementById('label-jogo-time-a').textContent = jogo.time_a;
             document.getElementById('label-jogo-time-b').textContent = jogo.time_b;
@@ -324,7 +361,7 @@ function carregarSelectResultados() {
                 document.getElementById('form-resultado-b').value = '';
             }
         }
-    });
+    };
 
     carregarListaResultados();
 }
@@ -342,17 +379,16 @@ function salvarResultado(event) {
     }
 
     const jogos = obterDados('jogos') || [];
-    const jogo = jogos.find(j => j.id === jogoId);
+    const jogo = jogos.find(j => Number(j.id) === Number(jogoId));
 
     if (jogo) {
         jogo.resultado = `${placarA}x${placarB}`;
-        jogo.ativo = false; // Bloquear novas apostas
+        jogo.ativo = false;
         salvarDados('jogos', jogos);
 
-        // Recalcular pontos
         recalcularPontos();
 
-        alert('✅ Resultado lançado!');
+        alert('✅ Resultado lançado no navegador.\n\nPara atualizar na planilha, edite o resultado na aba Jogos.');
         document.getElementById('form-resultado').reset();
         carregarSelectResultados();
         carregarDashboard();
@@ -377,7 +413,7 @@ function carregarListaResultados() {
                 <small>📍 ${jogo.local}</small>
             </div>
             <div class="jogo-actions">
-                <button class="btn btn-danger btn-small" onclick="deletarResultado(${jogo.id})">🗑️ Deletar</button>
+                <button class="btn btn-danger btn-small" onclick="deletarResultado(${Number(jogo.id)})">🗑️ Deletar</button>
             </div>
         </div>
     `).join('');
@@ -389,16 +425,16 @@ function deletarResultado(jogoId) {
     }
 
     const jogos = obterDados('jogos') || [];
-    const jogo = jogos.find(j => j.id === jogoId);
+    const jogo = jogos.find(j => Number(j.id) === Number(jogoId));
 
     if (jogo) {
         jogo.resultado = null;
-        jogo.ativo = true; // Reabrir apostas
+        jogo.ativo = true;
         salvarDados('jogos', jogos);
 
         recalcularPontos();
 
-        alert('✅ Resultado deletado!');
+        alert('✅ Resultado deletado do navegador.');
         carregarSelectResultados();
         carregarDashboard();
     }
