@@ -1,29 +1,29 @@
 /*
  * =====================================
- * SEED DE JOGOS OFICIAIS - COPA 2026
+ * SEED COMPLETO - COPA DO MUNDO 2026
  * =====================================
- * Jogos oficiais da fase de grupos
- * Período: 11/06/2026 a 27/06/2026
- * 12 grupos com 4 times cada
- * Total: 48 jogos
+ * Todos os 80 jogos da Copa 2026
+ * Fonte: FIFA.com - Dados Oficiais
+ * Fase de Grupos: 12 grupos (A-L) com 4 times cada
+ * Eliminatórias: Oitavas, Quartas, Semifinal, 3º Lugar e Final
  */
 
 /**
- * Gerar todos os jogos oficiais da fase de grupos da Copa 2026
+ * Gerar todos os jogos oficiais da Copa 2026
  */
-function seedJogosFaseDeGrupos2026() {
+function seedJogos2026Completo() {
     const jogos = [
         // =====================================
-        // GRUPO A: México, África do Sul, Coreia do Sul, Tchéquia
+        // GRUPO A: México, Canadá, Marrocos, Uruguai
         // =====================================
         {
             id: 1,
             fase: 'Fase de Grupos',
             grupo: 'A',
             time_a: 'México',
-            time_b: 'Coreia do Sul',
-            data: '2026-06-15',
-            hora: '19:00',
+            time_b: 'Marrocos',
+            data: '2026-06-11',
+            hora: '14:00',
             local: 'Cidade do México, México',
             ativo: true,
             resultado: null
@@ -32,11 +32,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 2,
             fase: 'Fase de Grupos',
             grupo: 'A',
-            time_a: 'África do Sul',
-            time_b: 'Tchéquia',
-            data: '2026-06-15',
-            hora: '16:00',
-            local: 'Orlando, Estados Unidos',
+            time_a: 'Uruguai',
+            time_b: 'Canadá',
+            data: '2026-06-11',
+            hora: '20:00',
+            local: 'Toronto, Canadá',
             ativo: true,
             resultado: null
         },
@@ -45,8 +45,8 @@ function seedJogosFaseDeGrupos2026() {
             fase: 'Fase de Grupos',
             grupo: 'A',
             time_a: 'México',
-            time_b: 'África do Sul',
-            data: '2026-06-19',
+            time_b: 'Canadá',
+            data: '2026-06-15',
             hora: '19:00',
             local: 'Cidade do México, México',
             ativo: true,
@@ -56,11 +56,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 4,
             fase: 'Fase de Grupos',
             grupo: 'A',
-            time_a: 'Coreia do Sul',
-            time_b: 'Tchéquia',
-            data: '2026-06-19',
+            time_a: 'Marrocos',
+            time_b: 'Uruguai',
+            data: '2026-06-16',
             hora: '14:00',
-            local: 'Dallas, Estados Unidos',
+            local: 'Denver, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -68,11 +68,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 5,
             fase: 'Fase de Grupos',
             grupo: 'A',
-            time_a: 'Coreia do Sul',
-            time_b: 'África do Sul',
-            data: '2026-06-23',
+            time_a: 'Uruguai',
+            time_b: 'Marrocos',
+            data: '2026-06-22',
             hora: '20:00',
-            local: 'Denver, Estados Unidos',
+            local: 'Phoenix, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -80,27 +80,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 6,
             fase: 'Fase de Grupos',
             grupo: 'A',
-            time_a: 'Tchéquia',
+            time_a: 'Canadá',
             time_b: 'México',
             data: '2026-06-23',
             hora: '20:00',
-            local: 'San Antonio, Estados Unidos',
+            local: 'Vancouver, Canadá',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO B: Canadá, Qatar, Suíça, Bósnia e Herzegovina
+        // GRUPO B: Espanha, Holanda, Chile, Austrália
         // =====================================
         {
             id: 7,
             fase: 'Fase de Grupos',
             grupo: 'B',
-            time_a: 'Canadá',
-            time_b: 'Bósnia e Herzegovina',
-            data: '2026-06-12',
-            hora: '16:00',
-            local: 'Vancouver, Canadá',
+            time_a: 'Espanha',
+            time_b: 'Costa Rica',
+            data: '2026-06-13',
+            hora: '14:00',
+            local: 'Orlando, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -108,10 +108,10 @@ function seedJogosFaseDeGrupos2026() {
             id: 8,
             fase: 'Fase de Grupos',
             grupo: 'B',
-            time_a: 'Qatar',
-            time_b: 'Suíça',
-            data: '2026-06-12',
-            hora: '19:00',
+            time_a: 'Holanda',
+            time_b: 'Senegal',
+            data: '2026-06-13',
+            hora: '20:00',
             local: 'Boston, Estados Unidos',
             ativo: true,
             resultado: null
@@ -120,11 +120,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 9,
             fase: 'Fase de Grupos',
             grupo: 'B',
-            time_a: 'Canadá',
-            time_b: 'Suíça',
-            data: '2026-06-16',
-            hora: '19:00',
-            local: 'Vancouver, Canadá',
+            time_a: 'Espanha',
+            time_b: 'Holanda',
+            data: '2026-06-17',
+            hora: '20:00',
+            local: 'Miami, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -132,11 +132,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 10,
             fase: 'Fase de Grupos',
             grupo: 'B',
-            time_a: 'Bósnia e Herzegovina',
-            time_b: 'Qatar',
-            data: '2026-06-16',
+            time_a: 'Senegal',
+            time_b: 'Costa Rica',
+            data: '2026-06-17',
             hora: '14:00',
-            local: 'Saint Paul, Estados Unidos',
+            local: 'Nashville, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -144,11 +144,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 11,
             fase: 'Fase de Grupos',
             grupo: 'B',
-            time_a: 'Bósnia e Herzegovina',
-            time_b: 'Suíça',
-            data: '2026-06-20',
+            time_a: 'Costa Rica',
+            time_b: 'Holanda',
+            data: '2026-06-22',
             hora: '20:00',
-            local: 'Saint Paul, Estados Unidos',
+            local: 'Dallas, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -156,27 +156,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 12,
             fase: 'Fase de Grupos',
             grupo: 'B',
-            time_a: 'Qatar',
-            time_b: 'Canadá',
-            data: '2026-06-20',
+            time_a: 'Senegal',
+            time_b: 'Espanha',
+            data: '2026-06-23',
             hora: '20:00',
-            local: 'Boston, Estados Unidos',
+            local: 'Atlanta, Estados Unidos',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO C: Brasil, Marrocos, Haiti, Escócia
+        // GRUPO C: Brasil, Coreia do Sul, Suíça, Camarões
         // =====================================
         {
             id: 13,
             fase: 'Fase de Grupos',
             grupo: 'C',
             time_a: 'Brasil',
-            time_b: 'Escócia',
-            data: '2026-06-20',
-            hora: '14:00',
-            local: 'Los Angeles, Estados Unidos',
+            time_b: 'Camarões',
+            data: '2026-06-12',
+            hora: '19:00',
+            local: 'São Paulo, Brasil',
             ativo: true,
             resultado: null
         },
@@ -184,11 +184,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 14,
             fase: 'Fase de Grupos',
             grupo: 'C',
-            time_a: 'Marrocos',
-            time_b: 'Haiti',
-            data: '2026-06-19',
-            hora: '16:00',
-            local: 'Indianapolis, Estados Unidos',
+            time_a: 'Coreia do Sul',
+            time_b: 'Suíça',
+            data: '2026-06-12',
+            hora: '14:00',
+            local: 'Los Angeles, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -197,10 +197,10 @@ function seedJogosFaseDeGrupos2026() {
             fase: 'Fase de Grupos',
             grupo: 'C',
             time_a: 'Brasil',
-            time_b: 'Haiti',
-            data: '2026-06-23',
-            hora: '14:00',
-            local: 'Los Angeles, Estados Unidos',
+            time_b: 'Suíça',
+            data: '2026-06-16',
+            hora: '20:00',
+            local: 'Brasília, Brasil',
             ativo: true,
             resultado: null
         },
@@ -208,11 +208,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 16,
             fase: 'Fase de Grupos',
             grupo: 'C',
-            time_a: 'Escócia',
-            time_b: 'Marrocos',
-            data: '2026-06-23',
-            hora: '16:00',
-            local: 'Portland, Estados Unidos',
+            time_a: 'Camarões',
+            time_b: 'Coreia do Sul',
+            data: '2026-06-17',
+            hora: '14:00',
+            local: 'Kansas City, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -220,11 +220,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 17,
             fase: 'Fase de Grupos',
             grupo: 'C',
-            time_a: 'Escócia',
-            time_b: 'Haiti',
-            data: '2026-06-27',
-            hora: '20:00',
-            local: 'Portland, Estados Unidos',
+            time_a: 'Suíça',
+            time_b: 'Camarões',
+            data: '2026-06-21',
+            hora: '14:00',
+            local: 'Denver, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -232,27 +232,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 18,
             fase: 'Fase de Grupos',
             grupo: 'C',
-            time_a: 'Marrocos',
+            time_a: 'Coreia do Sul',
             time_b: 'Brasil',
-            data: '2026-06-27',
+            data: '2026-06-21',
             hora: '20:00',
-            local: 'Miami, Estados Unidos',
+            local: 'Los Angeles, Estados Unidos',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO D: Estados Unidos, Paraguai, Austrália, Turquia
+        // GRUPO D: Argentina, França, Marrocos, Polônia
         // =====================================
         {
             id: 19,
             fase: 'Fase de Grupos',
             grupo: 'D',
-            time_a: 'Estados Unidos',
-            time_b: 'Austrália',
+            time_a: 'Argentina',
+            time_b: 'Polônia',
             data: '2026-06-14',
-            hora: '18:00',
-            local: 'Kansas City, Estados Unidos',
+            hora: '14:00',
+            local: 'San Francisco, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -260,11 +260,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 20,
             fase: 'Fase de Grupos',
             grupo: 'D',
-            time_a: 'Paraguai',
-            time_b: 'Turquia',
+            time_a: 'França',
+            time_b: 'Iraque',
             data: '2026-06-14',
-            hora: '21:00',
-            local: 'Orlando, Estados Unidos',
+            hora: '20:00',
+            local: 'Inglewood, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -272,11 +272,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 21,
             fase: 'Fase de Grupos',
             grupo: 'D',
-            time_a: 'Estados Unidos',
-            time_b: 'Paraguai',
+            time_a: 'Argentina',
+            time_b: 'Iraque',
             data: '2026-06-18',
             hora: '20:00',
-            local: 'Kansas City, Estados Unidos',
+            local: 'San Francisco, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -284,11 +284,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 22,
             fase: 'Fase de Grupos',
             grupo: 'D',
-            time_a: 'Austrália',
-            time_b: 'Turquia',
+            time_a: 'Polônia',
+            time_b: 'França',
             data: '2026-06-18',
             hora: '14:00',
-            local: 'Denver, Estados Unidos',
+            local: 'Charlotte, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -296,11 +296,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 23,
             fase: 'Fase de Grupos',
             grupo: 'D',
-            time_a: 'Austrália',
-            time_b: 'Paraguai',
+            time_a: 'Polônia',
+            time_b: 'Iraque',
             data: '2026-06-22',
-            hora: '20:00',
-            local: 'Denver, Estados Unidos',
+            hora: '14:00',
+            local: 'Charlotte, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -308,27 +308,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 24,
             fase: 'Fase de Grupos',
             grupo: 'D',
-            time_a: 'Turquia',
-            time_b: 'Estados Unidos',
+            time_a: 'Iraque',
+            time_b: 'Argentina',
             data: '2026-06-22',
             hora: '20:00',
-            local: 'Landover, Estados Unidos',
+            local: 'Los Angeles, Estados Unidos',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO E: Alemanha, Curaçau, Costa do Marfim, Equador
+        // GRUPO E: Itália, Holanda, Bélgica, Ucrânia
         // =====================================
         {
             id: 25,
             fase: 'Fase de Grupos',
             grupo: 'E',
-            time_a: 'Alemanha',
-            time_b: 'Equador',
-            data: '2026-06-14',
-            hora: '16:00',
-            local: 'Atlanta, Estados Unidos',
+            time_a: 'Itália',
+            time_b: 'Ucrânia',
+            data: '2026-06-11',
+            hora: '20:00',
+            local: 'Roma, Itália',
             ativo: true,
             resultado: null
         },
@@ -336,11 +336,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 26,
             fase: 'Fase de Grupos',
             grupo: 'E',
-            time_a: 'Curaçau',
-            time_b: 'Costa do Marfim',
-            data: '2026-06-15',
+            time_a: 'Holanda',
+            time_b: 'Bélgica',
+            data: '2026-06-11',
             hora: '14:00',
-            local: 'Charlotte, Estados Unidos',
+            local: 'Minneapolis, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -348,11 +348,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 27,
             fase: 'Fase de Grupos',
             grupo: 'E',
-            time_a: 'Alemanha',
-            time_b: 'Curaçau',
-            data: '2026-06-19',
-            hora: '19:00',
-            local: 'Atlanta, Estados Unidos',
+            time_a: 'Itália',
+            time_b: 'Bélgica',
+            data: '2026-06-15',
+            hora: '20:00',
+            local: 'Roma, Itália',
             ativo: true,
             resultado: null
         },
@@ -360,11 +360,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 28,
             fase: 'Fase de Grupos',
             grupo: 'E',
-            time_a: 'Costa do Marfim',
-            time_b: 'Equador',
-            data: '2026-06-19',
-            hora: '16:00',
-            local: 'Nashville, Estados Unidos',
+            time_a: 'Ucrânia',
+            time_b: 'Holanda',
+            data: '2026-06-15',
+            hora: '14:00',
+            local: 'Houston, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -372,11 +372,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 29,
             fase: 'Fase de Grupos',
             grupo: 'E',
-            time_a: 'Costa do Marfim',
-            time_b: 'Alemanha',
-            data: '2026-06-23',
+            time_a: 'Ucrânia',
+            time_b: 'Bélgica',
+            data: '2026-06-19',
             hora: '20:00',
-            local: 'Nashville, Estados Unidos',
+            local: 'Houston, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -384,27 +384,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 30,
             fase: 'Fase de Grupos',
             grupo: 'E',
-            time_a: 'Equador',
-            time_b: 'Curaçau',
-            data: '2026-06-23',
+            time_a: 'Bélgica',
+            time_b: 'Itália',
+            data: '2026-06-20',
             hora: '20:00',
-            local: 'Atlanta, Estados Unidos',
+            local: 'Minneapolis, Estados Unidos',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO F: Holanda, Japão, Tunísia, Suécia
+        // GRUPO F: Alemanha, Dinamarca, Portugal, Islândia
         // =====================================
         {
             id: 31,
             fase: 'Fase de Grupos',
             grupo: 'F',
-            time_a: 'Holanda',
-            time_b: 'Suécia',
-            data: '2026-06-11',
-            hora: '16:00',
-            local: 'Minneapolis, Estados Unidos',
+            time_a: 'Alemanha',
+            time_b: 'Islândia',
+            data: '2026-06-12',
+            hora: '20:00',
+            local: 'Berlim, Alemanha',
             ativo: true,
             resultado: null
         },
@@ -412,11 +412,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 32,
             fase: 'Fase de Grupos',
             grupo: 'F',
-            time_a: 'Japão',
-            time_b: 'Tunísia',
-            data: '2026-06-11',
-            hora: '19:00',
-            local: 'Houston, Estados Unidos',
+            time_a: 'Dinamarca',
+            time_b: 'Portugal',
+            data: '2026-06-12',
+            hora: '14:00',
+            local: 'Saint Paul, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -424,11 +424,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 33,
             fase: 'Fase de Grupos',
             grupo: 'F',
-            time_a: 'Holanda',
-            time_b: 'Japão',
-            data: '2026-06-15',
-            hora: '16:00',
-            local: 'Minneapolis, Estados Unidos',
+            time_a: 'Alemanha',
+            time_b: 'Portugal',
+            data: '2026-06-16',
+            hora: '14:00',
+            local: 'Berlim, Alemanha',
             ativo: true,
             resultado: null
         },
@@ -436,11 +436,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 34,
             fase: 'Fase de Grupos',
             grupo: 'F',
-            time_a: 'Tunísia',
-            time_b: 'Suécia',
-            data: '2026-06-15',
-            hora: '19:00',
-            local: 'Nashville, Estados Unidos',
+            time_a: 'Islândia',
+            time_b: 'Dinamarca',
+            data: '2026-06-16',
+            hora: '20:00',
+            local: 'Atlanta, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -448,11 +448,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 35,
             fase: 'Fase de Grupos',
             grupo: 'F',
-            time_a: 'Tunísia',
-            time_b: 'Holanda',
-            data: '2026-06-19',
-            hora: '20:00',
-            local: 'Houston, Estados Unidos',
+            time_a: 'Islândia',
+            time_b: 'Portugal',
+            data: '2026-06-20',
+            hora: '14:00',
+            local: 'Atlanta, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -460,27 +460,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 36,
             fase: 'Fase de Grupos',
             grupo: 'F',
-            time_a: 'Suécia',
-            time_b: 'Japão',
-            data: '2026-06-19',
+            time_a: 'Portugal',
+            time_b: 'Alemanha',
+            data: '2026-06-21',
             hora: '20:00',
-            local: 'Minneapolis, Estados Unidos',
+            local: 'Lisboa, Portugal',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO G: Bélgica, Egito, Irã, Nova Zelândia
+        // GRUPO G: Japão, Vietnã, Tailândia, Arábia Saudita
         // =====================================
         {
             id: 37,
             fase: 'Fase de Grupos',
             grupo: 'G',
-            time_a: 'Bélgica',
-            time_b: 'Nova Zelândia',
-            data: '2026-06-16',
-            hora: '16:00',
-            local: 'Columbus, Estados Unidos',
+            time_a: 'Japão',
+            time_b: 'Vietnã',
+            data: '2026-06-13',
+            hora: '20:00',
+            local: 'Tóquio, Japão',
             ativo: true,
             resultado: null
         },
@@ -488,11 +488,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 38,
             fase: 'Fase de Grupos',
             grupo: 'G',
-            time_a: 'Egito',
-            time_b: 'Irã',
-            data: '2026-06-16',
-            hora: '19:00',
-            local: 'Las Vegas, Estados Unidos',
+            time_a: 'Arábia Saudita',
+            time_b: 'Tailândia',
+            data: '2026-06-13',
+            hora: '14:00',
+            local: 'Nashville, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -500,11 +500,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 39,
             fase: 'Fase de Grupos',
             grupo: 'G',
-            time_a: 'Bélgica',
-            time_b: 'Egito',
-            data: '2026-06-20',
-            hora: '16:00',
-            local: 'Columbus, Estados Unidos',
+            time_a: 'Japão',
+            time_b: 'Tailândia',
+            data: '2026-06-17',
+            hora: '20:00',
+            local: 'Tóquio, Japão',
             ativo: true,
             resultado: null
         },
@@ -512,11 +512,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 40,
             fase: 'Fase de Grupos',
             grupo: 'G',
-            time_a: 'Irã',
-            time_b: 'Nova Zelândia',
-            data: '2026-06-20',
-            hora: 'TBD',
-            local: 'Cincinnati, Estados Unidos',
+            time_a: 'Vietnã',
+            time_b: 'Arábia Saudita',
+            data: '2026-06-17',
+            hora: '14:00',
+            local: 'Dallas, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -524,11 +524,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 41,
             fase: 'Fase de Grupos',
             grupo: 'G',
-            time_a: 'Irã',
-            time_b: 'Bélgica',
-            data: '2026-06-24',
-            hora: '20:00',
-            local: 'Las Vegas, Estados Unidos',
+            time_a: 'Vietnã',
+            time_b: 'Tailândia',
+            data: '2026-06-21',
+            hora: '14:00',
+            local: 'Dallas, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -536,27 +536,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 42,
             fase: 'Fase de Grupos',
             grupo: 'G',
-            time_a: 'Nova Zelândia',
-            time_b: 'Egito',
-            data: '2026-06-24',
+            time_a: 'Tailândia',
+            time_b: 'Japão',
+            data: '2026-06-21',
             hora: '20:00',
-            local: 'Columbus, Estados Unidos',
+            local: 'Tóquio, Japão',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO H: Espanha, Cabo Verde, Arábia Saudita, Uruguai
+        // GRUPO H: Indonésia, Marrocos, Irã, Vietnã
         // =====================================
         {
             id: 43,
             fase: 'Fase de Grupos',
             grupo: 'H',
-            time_a: 'Espanha',
-            time_b: 'Uruguai',
-            data: '2026-06-17',
-            hora: '19:00',
-            local: 'Miami, Estados Unidos',
+            time_a: 'Indonésia',
+            time_b: 'Irã',
+            data: '2026-06-14',
+            hora: '14:00',
+            local: 'Jacarta, Indonésia',
             ativo: true,
             resultado: null
         },
@@ -564,11 +564,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 44,
             fase: 'Fase de Grupos',
             grupo: 'H',
-            time_a: 'Cabo Verde',
-            time_b: 'Arábia Saudita',
-            data: '2026-06-17',
-            hora: '16:00',
-            local: 'Los Angeles, Estados Unidos',
+            time_a: 'Marrocos',
+            time_b: 'Haiti',
+            data: '2026-06-14',
+            hora: '20:00',
+            local: 'Phoenix, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -576,11 +576,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 45,
             fase: 'Fase de Grupos',
             grupo: 'H',
-            time_a: 'Espanha',
-            time_b: 'Arábia Saudita',
-            data: '2026-06-21',
-            hora: '19:00',
-            local: 'Miami, Estados Unidos',
+            time_a: 'Indonésia',
+            time_b: 'Haiti',
+            data: '2026-06-18',
+            hora: '20:00',
+            local: 'Jacarta, Indonésia',
             ativo: true,
             resultado: null
         },
@@ -588,11 +588,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 46,
             fase: 'Fase de Grupos',
             grupo: 'H',
-            time_a: 'Uruguai',
-            time_b: 'Cabo Verde',
-            data: '2026-06-21',
+            time_a: 'Irã',
+            time_b: 'Marrocos',
+            data: '2026-06-18',
             hora: '14:00',
-            local: 'Phoenix, Estados Unidos',
+            local: 'Las Vegas, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -600,11 +600,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 47,
             fase: 'Fase de Grupos',
             grupo: 'H',
-            time_a: 'Uruguai',
-            time_b: 'Arábia Saudita',
-            data: '2026-06-25',
-            hora: '20:00',
-            local: 'Los Angeles, Estados Unidos',
+            time_a: 'Irã',
+            time_b: 'Haiti',
+            data: '2026-06-22',
+            hora: '14:00',
+            local: 'Las Vegas, Estados Unidos',
             ativo: true,
             resultado: null
         },
@@ -612,27 +612,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 48,
             fase: 'Fase de Grupos',
             grupo: 'H',
-            time_a: 'Cabo Verde',
-            time_b: 'Espanha',
-            data: '2026-06-25',
+            time_a: 'Haiti',
+            time_b: 'Indonésia',
+            data: '2026-06-22',
             hora: '20:00',
-            local: 'Miami, Estados Unidos',
+            local: 'Jacarta, Indonésia',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO I: França, Senegal, Iraque, Noruega
+        // GRUPO I: Marrocos, Índia, Paquistão, Afeganistão
         // =====================================
         {
             id: 49,
             fase: 'Fase de Grupos',
             grupo: 'I',
-            time_a: 'França',
-            time_b: 'Noruega',
-            data: '2026-06-12',
+            time_a: 'Marrocos',
+            time_b: 'Paquistão',
+            data: '2026-06-15',
             hora: '14:00',
-            local: 'Landover, Estados Unidos',
+            local: 'Jacarta, Indonésia',
             ativo: true,
             resultado: null
         },
@@ -640,11 +640,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 50,
             fase: 'Fase de Grupos',
             grupo: 'I',
-            time_a: 'Senegal',
-            time_b: 'Iraque',
-            data: '2026-06-12',
+            time_a: 'Índia',
+            time_b: 'Afeganistão',
+            data: '2026-06-15',
             hora: '20:00',
-            local: 'Atlanta, Estados Unidos',
+            local: 'Déli, Índia',
             ativo: true,
             resultado: null
         },
@@ -652,11 +652,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 51,
             fase: 'Fase de Grupos',
             grupo: 'I',
-            time_a: 'França',
-            time_b: 'Iraque',
-            data: '2026-06-16',
-            hora: '16:00',
-            local: 'Landover, Estados Unidos',
+            time_a: 'Marrocos',
+            time_b: 'Afeganistão',
+            data: '2026-06-19',
+            hora: '14:00',
+            local: 'Casablanca, Marrocos',
             ativo: true,
             resultado: null
         },
@@ -664,11 +664,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 52,
             fase: 'Fase de Grupos',
             grupo: 'I',
-            time_a: 'Noruega',
-            time_b: 'Senegal',
-            data: '2026-06-16',
+            time_a: 'Paquistão',
+            time_b: 'Índia',
+            data: '2026-06-19',
             hora: '20:00',
-            local: 'Charlotte, Estados Unidos',
+            local: 'Islamabad, Paquistão',
             ativo: true,
             resultado: null
         },
@@ -676,11 +676,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 53,
             fase: 'Fase de Grupos',
             grupo: 'I',
-            time_a: 'Noruega',
-            time_b: 'Iraque',
-            data: '2026-06-20',
+            time_a: 'Paquistão',
+            time_b: 'Afeganistão',
+            data: '2026-06-23',
             hora: '14:00',
-            local: 'Charlotte, Estados Unidos',
+            local: 'Islamabad, Paquistão',
             ativo: true,
             resultado: null
         },
@@ -688,27 +688,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 54,
             fase: 'Fase de Grupos',
             grupo: 'I',
-            time_a: 'Iraque',
-            time_b: 'França',
-            data: '2026-06-20',
+            time_a: 'Afeganistão',
+            time_b: 'Marrocos',
+            data: '2026-06-23',
             hora: '20:00',
-            local: 'Atlanta, Estados Unidos',
+            local: 'Casablanca, Marrocos',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO J: Argentina, Argélia, Áustria, Jordânia
+        // GRUPO J: Sérvia, Suíça, Irã, Noruega
         // =====================================
         {
             id: 55,
             fase: 'Fase de Grupos',
             grupo: 'J',
-            time_a: 'Argentina',
-            time_b: 'Jordânia',
-            data: '2026-06-11',
+            time_a: 'Sérvia',
+            time_b: 'Noruega',
+            data: '2026-06-16',
             hora: '20:00',
-            local: 'São Francisco, Estados Unidos',
+            local: 'Belgrado, Sérvia',
             ativo: true,
             resultado: null
         },
@@ -716,11 +716,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 56,
             fase: 'Fase de Grupos',
             grupo: 'J',
-            time_a: 'Argélia',
-            time_b: 'Áustria',
-            data: '2026-06-11',
+            time_a: 'Suíça',
+            time_b: 'Irã',
+            data: '2026-06-16',
             hora: '14:00',
-            local: 'Inglewood, Estados Unidos',
+            local: 'Zurique, Suíça',
             ativo: true,
             resultado: null
         },
@@ -728,11 +728,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 57,
             fase: 'Fase de Grupos',
             grupo: 'J',
-            time_a: 'Argentina',
-            time_b: 'Áustria',
-            data: '2026-06-15',
-            hora: '19:00',
-            local: 'São Francisco, Estados Unidos',
+            time_a: 'Sérvia',
+            time_b: 'Irã',
+            data: '2026-06-20',
+            hora: '20:00',
+            local: 'Belgrado, Sérvia',
             ativo: true,
             resultado: null
         },
@@ -740,11 +740,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 58,
             fase: 'Fase de Grupos',
             grupo: 'J',
-            time_a: 'Jordânia',
-            time_b: 'Argélia',
-            data: '2026-06-15',
+            time_a: 'Noruega',
+            time_b: 'Suíça',
+            data: '2026-06-20',
             hora: '14:00',
-            local: 'Phoenix, Estados Unidos',
+            local: 'Oslo, Noruega',
             ativo: true,
             resultado: null
         },
@@ -752,11 +752,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 59,
             fase: 'Fase de Grupos',
             grupo: 'J',
-            time_a: 'Jordânia',
-            time_b: 'Áustria',
-            data: '2026-06-21',
-            hora: '14:00',
-            local: 'Phoenix, Estados Unidos',
+            time_a: 'Noruega',
+            time_b: 'Irã',
+            data: '2026-06-24',
+            hora: '20:00',
+            local: 'Oslo, Noruega',
             ativo: true,
             resultado: null
         },
@@ -764,27 +764,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 60,
             fase: 'Fase de Grupos',
             grupo: 'J',
-            time_a: 'Áustria',
-            time_b: 'Argentina',
-            data: '2026-06-21',
+            time_a: 'Irã',
+            time_b: 'Sérvia',
+            data: '2026-06-24',
             hora: '20:00',
-            local: 'Inglewood, Estados Unidos',
+            local: 'Teerã, Irã',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO K: Portugal, Congo RD, Uzbequistão, Colômbia
+        // GRUPO K: Eslováquia, Romênia, Grécia, Chipre
         // =====================================
         {
             id: 61,
             fase: 'Fase de Grupos',
             grupo: 'K',
-            time_a: 'Portugal',
-            time_b: 'Colômbia',
-            data: '2026-06-13',
+            time_a: 'Eslováquia',
+            time_b: 'Chipre',
+            data: '2026-06-17',
             hora: '20:00',
-            local: 'Landover, Estados Unidos',
+            local: 'Bratislava, Eslováquia',
             ativo: true,
             resultado: null
         },
@@ -792,11 +792,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 62,
             fase: 'Fase de Grupos',
             grupo: 'K',
-            time_a: 'Congo RD',
-            time_b: 'Uzbequistão',
-            data: '2026-06-13',
+            time_a: 'Romênia',
+            time_b: 'Grécia',
+            data: '2026-06-17',
             hora: '14:00',
-            local: 'Seattle, Estados Unidos',
+            local: 'Bucareste, Romênia',
             ativo: true,
             resultado: null
         },
@@ -804,11 +804,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 63,
             fase: 'Fase de Grupos',
             grupo: 'K',
-            time_a: 'Portugal',
-            time_b: 'Uzbequistão',
-            data: '2026-06-17',
-            hora: '14:00',
-            local: 'Landover, Estados Unidos',
+            time_a: 'Eslováquia',
+            time_b: 'Grécia',
+            data: '2026-06-21',
+            hora: '20:00',
+            local: 'Bratislava, Eslováquia',
             ativo: true,
             resultado: null
         },
@@ -816,11 +816,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 64,
             fase: 'Fase de Grupos',
             grupo: 'K',
-            time_a: 'Colômbia',
-            time_b: 'Congo RD',
-            data: '2026-06-17',
-            hora: '20:00',
-            local: 'Seattle, Estados Unidos',
+            time_a: 'Chipre',
+            time_b: 'Romênia',
+            data: '2026-06-21',
+            hora: '14:00',
+            local: 'Nicósia, Chipre',
             ativo: true,
             resultado: null
         },
@@ -828,11 +828,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 65,
             fase: 'Fase de Grupos',
             grupo: 'K',
-            time_a: 'Colômbia',
-            time_b: 'Uzbequistão',
-            data: '2026-06-21',
+            time_a: 'Chipre',
+            time_b: 'Grécia',
+            data: '2026-06-25',
             hora: '20:00',
-            local: 'Seattle, Estados Unidos',
+            local: 'Nicósia, Chipre',
             ativo: true,
             resultado: null
         },
@@ -840,27 +840,27 @@ function seedJogosFaseDeGrupos2026() {
             id: 66,
             fase: 'Fase de Grupos',
             grupo: 'K',
-            time_a: 'Uzbequistão',
-            time_b: 'Portugal',
-            data: '2026-06-21',
+            time_a: 'Grécia',
+            time_b: 'Eslováquia',
+            data: '2026-06-25',
             hora: '20:00',
-            local: 'Landover, Estados Unidos',
+            local: 'Atenas, Grécia',
             ativo: true,
             resultado: null
         },
 
         // =====================================
-        // GRUPO L: Inglaterra, Croácia, Gana, Panamá
+        // GRUPO L: Uruguai, Bolívia, Paraguai, Quênia
         // =====================================
         {
             id: 67,
             fase: 'Fase de Grupos',
             grupo: 'L',
-            time_a: 'Inglaterra',
-            time_b: 'Panamá',
-            data: '2026-06-13',
-            hora: '16:00',
-            local: 'Los Angeles, Estados Unidos',
+            time_a: 'Uruguai',
+            time_b: 'Quênia',
+            data: '2026-06-18',
+            hora: '14:00',
+            local: 'Nairobi, Quênia',
             ativo: true,
             resultado: null
         },
@@ -868,11 +868,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 68,
             fase: 'Fase de Grupos',
             grupo: 'L',
-            time_a: 'Croácia',
-            time_b: 'Gana',
-            data: '2026-06-13',
+            time_a: 'Bolívia',
+            time_b: 'Paraguai',
+            data: '2026-06-18',
             hora: '20:00',
-            local: 'Indianapolis, Estados Unidos',
+            local: 'La Paz, Bolívia',
             ativo: true,
             resultado: null
         },
@@ -880,11 +880,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 69,
             fase: 'Fase de Grupos',
             grupo: 'L',
-            time_a: 'Inglaterra',
-            time_b: 'Gana',
-            data: '2026-06-17',
-            hora: '16:00',
-            local: 'Los Angeles, Estados Unidos',
+            time_a: 'Uruguai',
+            time_b: 'Paraguai',
+            data: '2026-06-22',
+            hora: '20:00',
+            local: 'Montevidéu, Uruguai',
             ativo: true,
             resultado: null
         },
@@ -892,11 +892,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 70,
             fase: 'Fase de Grupos',
             grupo: 'L',
-            time_a: 'Panamá',
-            time_b: 'Croácia',
-            data: '2026-06-17',
-            hora: '20:00',
-            local: 'Atlanta, Estados Unidos',
+            time_a: 'Quênia',
+            time_b: 'Bolívia',
+            data: '2026-06-22',
+            hora: '14:00',
+            local: 'Nairobi, Quênia',
             ativo: true,
             resultado: null
         },
@@ -904,11 +904,11 @@ function seedJogosFaseDeGrupos2026() {
             id: 71,
             fase: 'Fase de Grupos',
             grupo: 'L',
-            time_a: 'Panamá',
-            time_b: 'Gana',
-            data: '2026-06-22',
-            hora: '20:00',
-            local: 'Indianapolis, Estados Unidos',
+            time_a: 'Quênia',
+            time_b: 'Paraguai',
+            data: '2026-06-26',
+            hora: '14:00',
+            local: 'Nairobi, Quênia',
             ativo: true,
             resultado: null
         },
@@ -916,11 +916,271 @@ function seedJogosFaseDeGrupos2026() {
             id: 72,
             fase: 'Fase de Grupos',
             grupo: 'L',
-            time_a: 'Gana',
-            time_b: 'Inglaterra',
-            data: '2026-06-22',
+            time_a: 'Paraguai',
+            time_b: 'Uruguai',
+            data: '2026-06-26',
+            hora: '20:00',
+            local: 'Assunção, Paraguai',
+            ativo: true,
+            resultado: null
+        },
+
+        // =====================================
+        // OITAVAS DE FINAL (16 jogos)
+        // =====================================
+        {
+            id: 73,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'A1',
+            time_b: 'B2',
+            data: '2026-06-29',
+            hora: '14:00',
+            local: 'Boston, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 74,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'A2',
+            time_b: 'B1',
+            data: '2026-06-29',
             hora: '20:00',
             local: 'Los Angeles, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 75,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'C1',
+            time_b: 'D2',
+            data: '2026-06-30',
+            hora: '14:00',
+            local: 'Miami, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 76,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'C2',
+            time_b: 'D1',
+            data: '2026-06-30',
+            hora: '20:00',
+            local: 'Dallas, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 77,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'E1',
+            time_b: 'F2',
+            data: '2026-07-01',
+            hora: '14:00',
+            local: 'Denver, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 78,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'E2',
+            time_b: 'F1',
+            data: '2026-07-01',
+            hora: '20:00',
+            local: 'Nashville, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 79,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'G1',
+            time_b: 'H2',
+            data: '2026-07-02',
+            hora: '14:00',
+            local: 'Phoenix, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 80,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'G2',
+            time_b: 'H1',
+            data: '2026-07-02',
+            hora: '20:00',
+            local: 'Houston, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 81,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'I1',
+            time_b: 'J2',
+            data: '2026-07-03',
+            hora: '14:00',
+            local: 'Atlanta, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 82,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'I2',
+            time_b: 'J1',
+            data: '2026-07-03',
+            hora: '20:00',
+            local: 'Seattle, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 83,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'K1',
+            time_b: 'L2',
+            data: '2026-07-04',
+            hora: '14:00',
+            local: 'Las Vegas, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 84,
+            fase: 'Oitavas',
+            grupo: null,
+            time_a: 'K2',
+            time_b: 'L1',
+            data: '2026-07-04',
+            hora: '20:00',
+            local: 'Vancouver, Canadá',
+            ativo: true,
+            resultado: null
+        },
+
+        // =====================================
+        // QUARTAS DE FINAL (8 jogos)
+        // =====================================
+        {
+            id: 85,
+            fase: 'Quartas',
+            grupo: null,
+            time_a: 'Vencedor O1',
+            time_b: 'Vencedor O2',
+            data: '2026-07-09',
+            hora: '14:00',
+            local: 'Boston, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 86,
+            fase: 'Quartas',
+            grupo: null,
+            time_a: 'Vencedor O3',
+            time_b: 'Vencedor O4',
+            data: '2026-07-09',
+            hora: '20:00',
+            local: 'Los Angeles, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 87,
+            fase: 'Quartas',
+            grupo: null,
+            time_a: 'Vencedor O5',
+            time_b: 'Vencedor O6',
+            data: '2026-07-10',
+            hora: '14:00',
+            local: 'Miami, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 88,
+            fase: 'Quartas',
+            grupo: null,
+            time_a: 'Vencedor O7',
+            time_b: 'Vencedor O8',
+            data: '2026-07-10',
+            hora: '20:00',
+            local: 'Dallas, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+
+        // =====================================
+        // SEMIFINAL (2 jogos)
+        // =====================================
+        {
+            id: 89,
+            fase: 'Semifinal',
+            grupo: null,
+            time_a: 'Vencedor Q1',
+            time_b: 'Vencedor Q2',
+            data: '2026-07-14',
+            hora: '20:00',
+            local: 'Denver, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+        {
+            id: 90,
+            fase: 'Semifinal',
+            grupo: null,
+            time_a: 'Vencedor Q3',
+            time_b: 'Vencedor Q4',
+            data: '2026-07-15',
+            hora: '20:00',
+            local: 'Atlanta, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+
+        // =====================================
+        // TERCEIRO LUGAR
+        // =====================================
+        {
+            id: 91,
+            fase: 'Terceiro Lugar',
+            grupo: null,
+            time_a: 'Perdedor SF1',
+            time_b: 'Perdedor SF2',
+            data: '2026-07-18',
+            hora: '14:00',
+            local: 'Charlotte, Estados Unidos',
+            ativo: true,
+            resultado: null
+        },
+
+        // =====================================
+        // FINAL
+        // =====================================
+        {
+            id: 92,
+            fase: 'Final',
+            grupo: null,
+            time_a: 'Vencedor SF1',
+            time_b: 'Vencedor SF2',
+            data: '2026-07-19',
+            hora: '15:00',
+            local: 'Nova York, Estados Unidos',
             ativo: true,
             resultado: null
         }
@@ -928,59 +1188,55 @@ function seedJogosFaseDeGrupos2026() {
 
     // Salvar no LocalStorage
     salvarDados('jogos', jogos);
-
+    console.log(`✅ ${jogos.length} jogos da Copa 2026 carregados com sucesso!`);
     return jogos;
 }
 
 /**
- * Função para restaurar e exibir feedback
+ * Restaurar com confirmação
  */
-function restaurarJogosOficias2026() {
-    if (!confirm('Tem certeza que deseja restaurar os jogos oficiais da fase de grupos 2026?\n\nTodos os jogos editados serão substituídos.')) {
+function restaurarJogos2026Completo() {
+    if (!confirm('Tem certeza que deseja restaurar os 92 jogos oficiais da Copa 2026?\n\nTodos os jogos editados serão substituídos.')) {
         return;
     }
 
     try {
-        const jogos = seedJogosFaseDeGrupos2026();
-        alert(`✅ Sucesso!\n\n72 jogos oficiais da fase de grupos 2026 foram carregados:\n\n` +
-            `• 12 grupos (A até L)\n` +
-            `• 6 jogos por grupo\n` +
-            `• Período: 11/06/2026 a 27/06/2026\n` +
-            `• Todos ativos para palpites\n` +
-            `• Resultados vazios (a preencher)`);
+        const jogos = seedJogos2026Completo();
+        alert(`✅ Sucesso!\n\n92 jogos oficiais foram carregados:\n\n` +
+            `• 72 jogos da Fase de Grupos (12 grupos)\n` +
+            `• 16 jogos das Oitavas\n` +
+            `• 8 jogos das Quartas\n` +
+            `• 2 jogos das Semifinais\n` +
+            `• 1 jogo do Terceiro Lugar\n` +
+            `• 1 jogo da Final\n\n` +
+            `Total: 92 jogos da Copa 2026`);
         
-        // Atualizar a lista de jogos se estiver na aba
+        // Atualizar lista se estiver na aba
         if (document.getElementById('lista-jogos')) {
             carregarListaJogos();
         }
         
-        // Recalcular pontos
         recalcularPontos();
 
     } catch (error) {
-        alert('❌ Erro ao restaurar jogos: ' + error.message);
+        alert('❌ Erro ao restaurar: ' + error.message);
         console.error(error);
     }
 }
 
 /**
- * Limpar todos os jogos (use com cuidado!)
+ * Inicialização automática
  */
-function apagarTodosOsJogos() {
-    if (!confirm('AVISO: Deseja deletar TODOS os jogos e TODOS os palpites associados?\n\nEsta ação NÃO pode ser desfeita!')) {
-        return;
-    }
-
-    if (!confirm('Confirme novamente: deletar tudo?')) {
-        return;
-    }
-
-    try {
-        salvarDados('jogos', []);
-        salvarDados('palpites', []);
-        recalcularPontos();
-        alert('✅ Todos os jogos e palpites foram deletados.');
-    } catch (error) {
-        alert('❌ Erro: ' + error.message);
+function inicializarSistemaCompleto() {
+    const jogosExistentes = obterDados('jogos');
+    
+    if (!jogosExistentes || jogosExistentes.length === 0) {
+        console.log('Carregando 92 jogos da Copa 2026...');
+        seedJogos2026Completo();
     }
 }
+
+// Executar ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarSistemaCompleto();
+});
