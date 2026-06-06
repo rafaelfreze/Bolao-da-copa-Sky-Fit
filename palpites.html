@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fazer Palpite - Bolão Online</title>
     <link rel="stylesheet" href="style.css">
+    <script src="seed-jogos-2026-completo.js"></script>
 </head>
 <body>
     <!-- Navegação -->
@@ -71,6 +72,34 @@
                     <fieldset>
                         <legend>Selecione o Jogo</legend>
                         
+                        <div class="form-group">
+                            <label for="grupo">Grupo/Fase *</label>
+                            <select id="grupo" name="grupo" required onchange="carregarJogosDoGrupo()">
+                                <option value="">-- Selecione um grupo/fase --</option>
+                                <optgroup label="Fase de Grupos">
+                                    <option value="A">Grupo A</option>
+                                    <option value="B">Grupo B</option>
+                                    <option value="C">Grupo C</option>
+                                    <option value="D">Grupo D</option>
+                                    <option value="E">Grupo E</option>
+                                    <option value="F">Grupo F</option>
+                                    <option value="G">Grupo G</option>
+                                    <option value="H">Grupo H</option>
+                                    <option value="I">Grupo I</option>
+                                    <option value="J">Grupo J</option>
+                                    <option value="K">Grupo K</option>
+                                    <option value="L">Grupo L</option>
+                                </optgroup>
+                                <optgroup label="Eliminatórias">
+                                    <option value="Oitavas">Oitavas de Final</option>
+                                    <option value="Quartas">Quartas de Final</option>
+                                    <option value="Semifinal">Semifinal</option>
+                                    <option value="Terceiro Lugar">Terceiro Lugar</option>
+                                    <option value="Final">Final</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label for="jogo">Jogo *</label>
                             <select id="jogo" name="jogo" required>
@@ -195,31 +224,36 @@
         let jogoSelecionado = null;
 
         document.addEventListener('DOMContentLoaded', function() {
-            carregarJogos();
-            carregarMeusPalpites();
             carregarConfigPagamento();
+            carregarMeusPalpites();
         });
 
-        function carregarJogos() {
+        function carregarJogosDoGrupo() {
+            const grupoSelecionado = document.getElementById('grupo').value;
+            const jogoSelect = document.getElementById('jogo');
             const jogos = obterDados('jogos') || [];
             const agora = new Date();
-            const jogoSelect = document.getElementById('jogo');
 
-            // Limpar opções anteriores
             jogoSelect.innerHTML = '<option value="">-- Selecione um jogo --</option>';
 
-            // Filtrar apenas jogos ativos e no futuro
-            const jogosDisponiveis = jogos.filter(j => {
-                const dataJogo = new Date(j.data + 'T' + j.hora);
-                return j.ativo && dataJogo > agora && !j.resultado;
-            });
+            if (!grupoSelecionado) return;
 
-            if (jogosDisponiveis.length === 0) {
+            let jogosFiltrando = jogos;
+
+            // Se é um grupo (A-L), filtrar por grupo
+            if (grupoSelecionado.match(/^[A-L]$/)) {
+                jogosFiltrando = jogos.filter(j => j.grupo === grupoSelecionado && j.ativo);
+            } else {
+                // Se é uma fase eliminatória
+                jogosFiltrando = jogos.filter(j => j.fase === grupoSelecionado && j.ativo);
+            }
+
+            if (jogosFiltrando.length === 0) {
                 jogoSelect.innerHTML += '<option disabled>Nenhum jogo disponível</option>';
                 return;
             }
 
-            jogosDisponiveis.forEach(jogo => {
+            jogosFiltrando.forEach(jogo => {
                 const dataJogo = new Date(jogo.data + 'T' + jogo.hora);
                 const dataFormatada = dataJogo.toLocaleDateString('pt-BR', {
                     day: '2-digit',
@@ -235,15 +269,10 @@
             });
         }
 
-        function carregarConfigPagamento() {
-            const config = obterConfiguracao();
-            document.getElementById('chave-pix').value = config.chave_pix;
-            document.getElementById('recebedor-pix').textContent = config.recebedor_pix;
-            document.getElementById('valor-palpite').textContent = formatarMoeda(config.valor_palpite);
-        }
-
         document.getElementById('jogo').addEventListener('change', function() {
-            jogoSelecionado = obterJogoPorId(parseInt(this.value));
+            const jogoId = parseInt(this.value);
+            const jogos = obterDados('jogos') || [];
+            jogoSelecionado = jogos.find(j => j.id === jogoId);
             
             if (jogoSelecionado) {
                 document.getElementById('label-time-a').textContent = jogoSelecionado.time_a;
@@ -259,11 +288,13 @@
                     minute: '2-digit'
                 });
 
+                const grupoInfo = jogoSelecionado.grupo ? `Grupo ${jogoSelecionado.grupo}` : jogoSelecionado.fase;
+
                 document.getElementById('game-details').innerHTML = `
                     <strong>${jogoSelecionado.time_a} vs ${jogoSelecionado.time_b}</strong><br>
                     📅 ${dataFormatada}<br>
                     📍 ${jogoSelecionado.local}<br>
-                    🎯 ${jogoSelecionado.fase}
+                    🎯 ${grupoInfo}
                 `;
 
                 document.getElementById('game-info').style.display = 'block';
@@ -330,7 +361,7 @@
             palpites.push(novoPalpite);
             salvarDados('palpites', palpites);
 
-            // Mostrar mensagem de sucesso e seção de pagamento
+            // Mostrar mensagem de sucesso
             document.getElementById('palpite-form').style.display = 'none';
             document.getElementById('sucesso-msg').style.display = 'block';
             document.getElementById('pagamento-section').style.display = 'block';
@@ -380,7 +411,15 @@
             document.getElementById('sucesso-msg').style.display = 'none';
             document.getElementById('pagamento-section').style.display = 'none';
             document.getElementById('game-info').style.display = 'none';
-            carregarJogos();
+            document.getElementById('grupo').value = '';
+            carregarMeusPalpites();
+        }
+
+        function carregarConfigPagamento() {
+            const config = obterConfiguracao();
+            document.getElementById('chave-pix').value = config.chave_pix;
+            document.getElementById('recebedor-pix').textContent = config.recebedor_pix;
+            document.getElementById('valor-palpite').textContent = formatarMoeda(config.valor_palpite);
         }
 
         function carregarMeusPalpites() {
@@ -415,7 +454,6 @@
             `).join('');
         }
 
-        // Atualizar lista de palpites quando mudar nome/whatsapp
         document.getElementById('nome').addEventListener('blur', carregarMeusPalpites);
         document.getElementById('whatsapp').addEventListener('blur', carregarMeusPalpites);
     </script>
