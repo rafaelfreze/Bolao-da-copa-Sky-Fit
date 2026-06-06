@@ -41,6 +41,7 @@
             <!-- Menu de Abas -->
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="dashboard">📊 Dashboard</button>
+                <button class="admin-tab" data-tab="jogos">🎮 Gerenciar Jogos</button>
                 <button class="admin-tab" data-tab="pagamentos">💰 Pagamentos</button>
                 <button class="admin-tab" data-tab="resultados">🏆 Resultados</button>
                 <button class="admin-tab" data-tab="participantes">👥 Participantes</button>
@@ -76,6 +77,130 @@
                         <p class="stat-value" id="admin-finished-games">0</p>
                     </div>
                 </div>
+            </div>
+
+            <!-- TAB: Gerenciar Jogos -->
+            <div id="jogos-tab" class="admin-tab-content">
+                <h2>Gerenciar Jogos</h2>
+                
+                <div class="form-container">
+                    <h3>Adicionar/Editar Jogo</h3>
+                    <form id="jogo-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="jogo-id">ID do Jogo (auto):</label>
+                                <input type="text" id="jogo-id" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="jogo-fase">Fase *</label>
+                                <select id="jogo-fase" required>
+                                    <option value="">-- Selecione --</option>
+                                    <option value="Grupo A">Grupo A</option>
+                                    <option value="Grupo B">Grupo B</option>
+                                    <option value="Grupo C">Grupo C</option>
+                                    <option value="Grupo D">Grupo D</option>
+                                    <option value="Grupo E">Grupo E</option>
+                                    <option value="Grupo F">Grupo F</option>
+                                    <option value="Grupo G">Grupo G</option>
+                                    <option value="Grupo H">Grupo H</option>
+                                    <option value="Oitavas de Final">Oitavas de Final</option>
+                                    <option value="Quartas de Final">Quartas de Final</option>
+                                    <option value="Semifinal">Semifinal</option>
+                                    <option value="Final">Final</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="jogo-time-a">Time A *</label>
+                                <input type="text" id="jogo-time-a" required placeholder="Ex: Brasil">
+                            </div>
+                            <div class="form-group">
+                                <label for="jogo-time-b">Time B *</label>
+                                <input type="text" id="jogo-time-b" required placeholder="Ex: Argentina">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="jogo-data">Data *</label>
+                                <input type="date" id="jogo-data" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jogo-hora">Horário *</label>
+                                <input type="time" id="jogo-hora" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="jogo-local">Local *</label>
+                                <input type="text" id="jogo-local" required placeholder="Ex: São Paulo, Brasil">
+                            </div>
+                            <div class="form-group">
+                                <label for="jogo-ativo">Status</label>
+                                <select id="jogo-ativo">
+                                    <option value="true">✅ Ativo (Aceita Palpites)</option>
+                                    <option value="false">❌ Inativo (Bloqueado)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="jogo-resultado">Resultado (opcional)</label>
+                                <input type="text" id="jogo-resultado" placeholder="Ex: 2x1">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">💾 Salvar Jogo</button>
+                            <button type="button" class="btn btn-secondary" onclick="limparFormJogo()">🔄 Limpar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Filtros -->
+                <div class="admin-filters" style="margin-top: 2rem;">
+                    <input type="text" id="jogos-search" placeholder="Buscar por times..." class="search-input">
+                    <select id="jogos-filter-fase" class="filter-select">
+                        <option value="">Todas as Fases</option>
+                        <option value="Grupo A">Grupo A</option>
+                        <option value="Grupo B">Grupo B</option>
+                        <option value="Grupo C">Grupo C</option>
+                        <option value="Grupo D">Grupo D</option>
+                        <option value="Grupo E">Grupo E</option>
+                        <option value="Grupo F">Grupo F</option>
+                        <option value="Grupo G">Grupo G</option>
+                        <option value="Grupo H">Grupo H</option>
+                        <option value="Oitavas de Final">Oitavas de Final</option>
+                        <option value="Quartas de Final">Quartas de Final</option>
+                        <option value="Semifinal">Semifinal</option>
+                        <option value="Final">Final</option>
+                    </select>
+                    <button onclick="exportarJogos()" class="btn btn-secondary">📥 Exportar Jogos</button>
+                </div>
+
+                <!-- Tabela de Jogos -->
+                <table class="admin-table" style="margin-top: 2rem;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fase</th>
+                            <th>Time A</th>
+                            <th>Time B</th>
+                            <th>Data/Hora</th>
+                            <th>Local</th>
+                            <th>Resultado</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jogos-table">
+                        <tr><td colspan="9" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- TAB: Pagamentos -->
@@ -211,14 +336,14 @@
 
                 <div class="form-container">
                     <h3>Inicializar Base de Dados</h3>
-                    <button onclick="initializeDatabase()" class="btn btn-danger btn-block">🔄 Carregar Jogos da Copa 2026</button>
-                    <p class="help-text">Clique para carregar todos os 48 jogos da Copa do Mundo 2026</p>
+                    <button onclick="initializeDatabase()" class="btn btn-danger btn-block">🔄 Carregar Jogos Padrão da Copa 2026</button>
+                    <p class="help-text">Clique para carregar todos os 48 jogos da fase de grupos da Copa do Mundo 2026</p>
                 </div>
 
                 <div class="form-container">
                     <h3>Exportar Dados</h3>
                     <button onclick="exportarTodosOsDados()" class="btn btn-secondary btn-block">📊 Exportar Todos os Dados</button>
-                    <p class="help-text">Exporta participantes, palpites e resultados em JSON</p>
+                    <p class="help-text">Exporta participantes, palpites, jogos e configurações em JSON</p>
                 </div>
 
                 <div class="form-container">
@@ -239,5 +364,6 @@
 
     <script src="script.js"></script>
     <script src="admin.js"></script>
+    <script src="admin-jogos.js"></script>
 </body>
 </html>
