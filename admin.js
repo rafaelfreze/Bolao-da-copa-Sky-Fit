@@ -154,9 +154,9 @@ function carregarListaJogos() {
     });
 
     let html = '';
-    Object.entries(agrupado).forEach(([fase, jogos]) => {
-        html += `<h4 style="margin-top: 1.5rem; color: var(--primary);">${fase}</h4>`;
-        html += jogos.map(jogo => `
+    Object.entries(agrupado).forEach(([fase, jogosGrupo]) => {
+        html += `<h4 style="margin-top: 1.5rem; color: var(--secondary);">${fase}</h4>`;
+        html += jogosGrupo.map(jogo => `
             <div class="jogo-item">
                 <div class="jogo-info">
                     <strong>${jogo.time_a} vs ${jogo.time_b}</strong><br>
@@ -523,18 +523,4 @@ function exportarDados() {
     const json = JSON.stringify(dados, null, 2);
     baixarArquivo('bolao-backup.json', json, 'application/json');
     alert('✅ Dados exportados!');
-}
-
-function limparTodosDados() {
-    if (!confirm('⚠️ Tem certeza? Esta ação não pode ser desfeita!')) {
-        return;
-    }
-
-    if (!confirm('Confirme novamente: deseja REALMENTE limpar tudo?')) {
-        return;
-    }
-
-    localStorage.clear();
-    alert('✅ Todos os dados foram deletados!');
-    location.reload();
 }
