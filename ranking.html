@@ -3,84 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ranking - Bolão da Copa 2026</title>
+    <title>Ranking - Bolão Online</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Navegação -->
     <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-logo">
-                <span class="logo-icon">⚽</span>
-                <span class="logo-text">Bolão SKY FIT</span>
+        <div class="container">
+            <div class="navbar-brand">
+                <span class="logo-emoji">⚽</span>
+                <span class="logo-text">Bolão Online</span>
             </div>
             <ul class="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link">Início</a></li>
-                <li class="nav-item"><a href="palpites.html" class="nav-link">Palpitar</a></li>
-                <li class="nav-item"><a href="ranking.html" class="nav-link active">Ranking</a></li>
-                <li class="nav-item"><a href="tabela.html" class="nav-link">Tabela</a></li>
+                <li><a href="index.html" class="nav-link">Início</a></li>
+                <li><a href="palpites.html" class="nav-link">Palpites</a></li>
+                <li><a href="ranking.html" class="nav-link active">Ranking</a></li>
+                <li><a href="tabela.html" class="nav-link">Tabela</a></li>
+                <li><a href="admin.html" class="nav-link">Admin</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Conteúdo Principal -->
+    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
             <h1 class="page-title">Ranking</h1>
-            <p class="page-subtitle">Confira a posição de todos os participantes</p>
 
             <!-- Filtros -->
             <div class="filter-section">
-                <button class="btn btn-filter active" data-filter="todos">Todos</button>
-                <button class="btn btn-filter" data-filter="pagos">✅ Pagos</button>
-                <button class="btn btn-filter" data-filter="pendentes">⏳ Pendentes</button>
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="pagos">✅ Pagos</button>
+                <button class="filter-btn" data-filter="pendentes">⏳ Pendentes</button>
             </div>
 
-            <!-- Ranking Table -->
-            <div class="ranking-container">
+            <!-- Pódio (Mobile) -->
+            <div id="podium-container" class="podium-container"></div>
+
+            <!-- Tabela Ranking -->
+            <div class="ranking-card">
                 <table class="ranking-table">
                     <thead>
                         <tr>
-                            <th class="col-position">Pos.</th>
-                            <th class="col-name">Participante</th>
-                            <th class="col-points">Pontos</th>
-                            <th class="col-bets">Palpites</th>
-                            <th class="col-hits">Acertos</th>
+                            <th class="col-pos">Pos.</th>
+                            <th class="col-nome">Participante</th>
+                            <th class="col-pontos">Pontos</th>
+                            <th class="col-palpites">Palpites</th>
+                            <th class="col-acertos">Acertos</th>
                             <th class="col-status">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="ranking-body">
-                        <tr>
-                            <td colspan="6" class="text-center">Carregando ranking...</td>
-                        </tr>
+                    <tbody id="ranking-tbody">
+                        <tr><td colspan="6" class="text-center">Carregando ranking...</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Top 3 Podium (Mobile) -->
-            <div class="podium-container" id="podium">
-                <!-- Gerado por JavaScript -->
-            </div>
-
             <!-- Estatísticas -->
             <div class="stats-section">
-                <h2 class="section-title">Estatísticas Gerais</h2>
+                <h2>📊 Estatísticas Gerais</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3>Total de Participantes</h3>
-                        <p class="stat-value" id="total-participants-stat">0</p>
+                        <h3>Total Participantes</h3>
+                        <p class="stat-value" id="stat-participantes">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Participantes Pagos</h3>
-                        <p class="stat-value" id="paid-participants-stat">0</p>
+                        <h3>Pagos</h3>
+                        <p class="stat-value" id="stat-pagos">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Prêmio Acumulado</h3>
-                        <p class="stat-value" id="total-prize-stat">R$ 0,00</p>
+                        <h3>Total Arrecadado</h3>
+                        <p class="stat-value" id="stat-arrecadado">R$ 0,00</p>
                     </div>
                     <div class="stat-card">
                         <h3>Total de Palpites</h3>
-                        <p class="stat-value" id="total-bets-stat">0</p>
+                        <p class="stat-value" id="stat-palpites">0</p>
                     </div>
                 </div>
             </div>
@@ -90,77 +86,80 @@
     <!-- Rodapé -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 Bolão da Copa SKY FIT Academia. Todos os direitos reservados.</p>
+            <p>&copy; 2026 Bolão Online. Todos os direitos reservados.</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
     <script>
-        let currentFilter = 'todos';
+        let filtroAtual = 'todos';
 
         document.addEventListener('DOMContentLoaded', function() {
-            loadRanking();
-            setupFilters();
+            carregarRanking();
+            setupFiltros();
         });
 
-        function setupFilters() {
-            document.querySelectorAll('.btn-filter').forEach(btn => {
+        function setupFiltros() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    currentFilter = this.dataset.filter;
-                    loadRanking();
+                    filtroAtual = this.dataset.filter;
+                    carregarRanking();
                 });
             });
         }
 
-        function loadRanking() {
-            const participantes = loadFromLocalStorage('participantes') || [];
-            const palpites = loadFromLocalStorage('palpites') || [];
+        function carregarRanking() {
+            const participantes = obterDados('participantes') || [];
+            const palpites = obterDados('palpites') || [];
 
-            // Calcular pontos para cada participante
+            // Calcular ranking
             const ranking = participantes.map(p => {
-                const userBets = palpites.filter(bet => bet.nome === p.nome && bet.whatsapp === p.whatsapp);
-                const pontosCalculados = userBets.reduce((total, bet) => total + (bet.pontos || 0), 0);
-                const acertos = userBets.filter(bet => bet.pontos > 0).length;
+                const userPalpites = palpites.filter(pal => pal.nome === p.nome && pal.whatsapp === p.whatsapp);
+                const pontos = userPalpites.reduce((total, pal) => total + (pal.pontos || 0), 0);
+                const acertos = userPalpites.filter(pal => pal.pontos > 0).length;
 
                 return {
                     ...p,
-                    totalBets: userBets.length,
-                    totalHits: acertos,
-                    totalPoints: pontosCalculados
+                    palpites_total: userPalpites.length,
+                    pontos: pontos,
+                    acertos: acertos
                 };
-            }).sort((a, b) => b.totalPoints - a.totalPoints);
+            });
+
+            // Ordenar por pontos
+            ranking.sort((a, b) => b.pontos - a.pontos);
 
             // Filtrar conforme seleção
-            let filtered = ranking;
-            if (currentFilter === 'pagos') {
-                filtered = ranking.filter(p => p.pago);
-            } else if (currentFilter === 'pendentes') {
-                filtered = ranking.filter(p => !p.pago);
+            let filtrado = ranking;
+            if (filtroAtual === 'pagos') {
+                filtrado = ranking.filter(p => p.pago);
+            } else if (filtroAtual === 'pendentes') {
+                filtrado = ranking.filter(p => !p.pago);
             }
 
-            // Renderizar tabela
-            const tbody = document.getElementById('ranking-body');
-            if (filtered.length === 0) {
+            // Preencher tabela
+            const tbody = document.getElementById('ranking-tbody');
+            if (filtrado.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum participante encontrado</td></tr>';
             } else {
-                tbody.innerHTML = filtered.map((p, index) => `
-                    <tr class="ranking-row ${index === 0 ? 'first-place' : index === 1 ? 'second-place' : index === 2 ? 'third-place' : ''}">
-                        <td class="col-position">
-                            <span class="position-badge ${index < 3 ? 'top-3' : ''}">${index + 1}</span>
+                tbody.innerHTML = filtrado.map((p, index) => `
+                    <tr class="rank-${index === 0 ? '1st' : index === 1 ? '2nd' : index === 2 ? '3rd' : 'other'}">
+                        <td class="col-pos">
+                            <span class="pos-badge">
+                                ${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                            </span>
                         </td>
-                        <td class="col-name">
-                            <div class="participant-info">
-                                <strong>${p.nome}</strong>
-                                <small>${p.whatsapp}</small>
-                            </div>
+                        <td class="col-nome">
+                            <strong>${p.nome}</strong><br>
+                            <small>${p.whatsapp}</small>
                         </td>
-                        <td class="col-points"><strong>${p.totalPoints}</strong></td>
-                        <td class="col-bets">${p.totalBets}</td>
-                        <td class="col-hits">${p.totalHits}</td>
+                        <td class="col-pontos"><strong>${p.pontos}</strong></td>
+                        <td class="col-palpites">${p.palpites_total}</td>
+                        <td class="col-acertos">${p.acertos}</td>
                         <td class="col-status">
-                            <span class="status-badge ${p.pago ? 'paid' : 'pending'}">
+                            <span class="status-badge ${p.pago ? 'pago' : 'pendente'}">
                                 ${p.pago ? '✅ Pago' : '⏳ Pendente'}
                             </span>
                         </td>
@@ -169,72 +168,71 @@
             }
 
             // Renderizar pódio
-            renderPodium(ranking.slice(0, 3));
+            renderizarPodio(ranking.slice(0, 3));
 
             // Atualizar estatísticas
-            updateStats(participantes, palpites);
+            atualizarEstatisticas(participantes, palpites);
         }
 
-        function renderPodium(topThree) {
-            const podium = document.getElementById('podium');
-            
-            if (topThree.length === 0) {
-                podium.innerHTML = '<p class="text-center">Nenhum participante ainda.</p>';
+        function renderizarPodio(top3) {
+            const container = document.getElementById('podium-container');
+
+            if (top3.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">Nenhum participante ainda.</p>';
                 return;
             }
 
-            let podiumHTML = '<div class="podium">';
+            let html = '<div class="podium">';
 
             // 2º lugar
-            if (topThree[1]) {
-                podiumHTML += `
-                    <div class="podium-position second">
+            if (top3[1]) {
+                html += `
+                    <div class="podium-place podium-2nd">
                         <div class="podium-medal">🥈</div>
-                        <div class="podium-name">${topThree[1].nome}</div>
-                        <div class="podium-points">${topThree[1].totalPoints} pts</div>
-                        <div class="podium-height">2º</div>
+                        <div class="podium-name">${top3[1].nome}</div>
+                        <div class="podium-points">${top3[1].pontos} pts</div>
+                        <div class="podium-height"></div>
                     </div>
                 `;
             }
 
             // 1º lugar
-            if (topThree[0]) {
-                podiumHTML += `
-                    <div class="podium-position first">
+            if (top3[0]) {
+                html += `
+                    <div class="podium-place podium-1st">
                         <div class="podium-medal">🥇</div>
-                        <div class="podium-name">${topThree[0].nome}</div>
-                        <div class="podium-points">${topThree[0].totalPoints} pts</div>
-                        <div class="podium-height">1º</div>
+                        <div class="podium-name">${top3[0].nome}</div>
+                        <div class="podium-points">${top3[0].pontos} pts</div>
+                        <div class="podium-height"></div>
                     </div>
                 `;
             }
 
             // 3º lugar
-            if (topThree[2]) {
-                podiumHTML += `
-                    <div class="podium-position third">
+            if (top3[2]) {
+                html += `
+                    <div class="podium-place podium-3rd">
                         <div class="podium-medal">🥉</div>
-                        <div class="podium-name">${topThree[2].nome}</div>
-                        <div class="podium-points">${topThree[2].totalPoints} pts</div>
-                        <div class="podium-height">3º</div>
+                        <div class="podium-name">${top3[2].nome}</div>
+                        <div class="podium-points">${top3[2].pontos} pts</div>
+                        <div class="podium-height"></div>
                     </div>
                 `;
             }
 
-            podiumHTML += '</div>';
-            podium.innerHTML = podiumHTML;
+            html += '</div>';
+            container.innerHTML = html;
         }
 
-        function updateStats(participantes, palpites) {
-            const totalParticipants = participantes.length;
-            const paidParticipants = participantes.filter(p => p.pago).length;
-            const totalPrize = paidParticipants * 10;
-            const totalBets = palpites.length;
+        function atualizarEstatisticas(participantes, palpites) {
+            const pagos = participantes.filter(p => p.pago).length;
+            const config = obterConfiguracao();
+            const arrecadado = pagos * config.valor_palpite;
 
-            document.getElementById('total-participants-stat').textContent = totalParticipants;
-            document.getElementById('paid-participants-stat').textContent = paidParticipants;
-            document.getElementById('total-prize-stat').textContent = `R$ ${totalPrize.toFixed(2).replace('.', ',')}`;
-            document.getElementById('total-bets-stat').textContent = totalBets;
+            document.getElementById('stat-participantes').textContent = participantes.length;
+            document.getElementById('stat-pagos').textContent = pagos;
+            document.getElementById('stat-arrecadado').textContent = formatarMoeda(arrecadado);
+            document.getElementById('stat-palpites').textContent = palpites.length;
         }
     </script>
 </body>
