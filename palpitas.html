@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fazer Palpite - Bolão da Copa 2026</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">Bolão SKY FIT</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Início</a></li>
+                <li class="nav-item"><a href="palpites.html" class="nav-link active">Palpitar</a></li>
+                <li class="nav-item"><a href="ranking.html" class="nav-link">Ranking</a></li>
+                <li class="nav-item"><a href="tabela.html" class="nav-link">Tabela</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Faça seu Palpite</h1>
+            <p class="page-subtitle">Registre seus palpites para os jogos da Copa 2026</p>
+
+            <div class="form-container">
+                <form id="palpite-form" class="form">
+                    <!-- Dados Pessoais -->
+                    <div class="form-section">
+                        <h2 class="form-section-title">Seus Dados</h2>
+                        
+                        <div class="form-group">
+                            <label for="nome">Nome Completo *</label>
+                            <input type="text" id="nome" name="nome" required placeholder="Seu nome completo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="whatsapp">WhatsApp *</label>
+                            <input type="tel" id="whatsapp" name="whatsapp" required placeholder="(XX) 9XXXX-XXXX">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email (opcional)</label>
+                            <input type="email" id="email" name="email" placeholder="seu@email.com">
+                        </div>
+                    </div>
+
+                    <!-- Seleção do Jogo -->
+                    <div class="form-section">
+                        <h2 class="form-section-title">Selecione o Jogo</h2>
+                        
+                        <div class="form-group">
+                            <label for="jogo">Jogo *</label>
+                            <select id="jogo" name="jogo" required>
+                                <option value="">-- Selecione um jogo --</option>
+                            </select>
+                        </div>
+
+                        <div class="game-info-box" id="game-info-box" style="display: none;">
+                            <p id="game-details"></p>
+                        </div>
+                    </div>
+
+                    <!-- Palpites -->
+                    <div class="form-section">
+                        <h2 class="form-section-title">Seu Palpite</h2>
+
+                        <div class="score-input-container">
+                            <div class="team-section">
+                                <div class="team-name" id="time-a-name">Time A</div>
+                                <input type="number" id="placar-a" name="placar-a" min="0" max="99" required placeholder="0" class="score-input">
+                            </div>
+
+                            <div class="vs-separator">vs</div>
+
+                            <div class="team-section">
+                                <div class="team-name" id="time-b-name">Time B</div>
+                                <input type="number" id="placar-b" name="placar-b" min="0" max="99" required placeholder="0" class="score-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão Submit -->
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Registrar Palpite</button>
+                </form>
+
+                <!-- Mensagem de Sucesso -->
+                <div id="success-message" class="alert alert-success" style="display: none;">
+                    <div class="alert-icon">✅</div>
+                    <div>
+                        <strong>Palpite Registrado com Sucesso!</strong>
+                        <p>Seu palpite foi armazenado. Agora realize o pagamento via PIX para finalizar sua participação.</p>
+                        <a href="palpites.html?tab=pagamento" class="btn btn-secondary btn-sm">Ir para Pagamento</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Pagamento -->
+            <div class="form-container" id="payment-section" style="display: none;">
+                <h2 class="form-section-title">🎯 Finalize seu Pagamento via PIX</h2>
+                
+                <div class="payment-info">
+                    <div class="payment-card">
+                        <h3>Valor da Aposta</h3>
+                        <p class="payment-value">R$ 10,00</p>
+                    </div>
+                </div>
+
+                <div class="pix-container">
+                    <div class="pix-box">
+                        <h3>Escaneie o QR Code</h3>
+                        <div id="qrcode" class="qr-code"></div>
+                    </div>
+
+                    <div class="pix-box">
+                        <h3>ou Use o Código PIX Copia e Cola</h3>
+                        <div class="pix-copy-box">
+                            <input type="text" id="pix-code" readonly value="31.721.213/0001-36" class="pix-input">
+                            <button type="button" class="btn btn-secondary btn-copy" onclick="copyPixCode()">📋 Copiar Código</button>
+                        </div>
+                        <p class="pix-info">Recebedor: OnPlay Marketing e Serviços a Laser</p>
+                    </div>
+                </div>
+
+                <div class="payment-status">
+                    <button type="button" class="btn btn-success btn-block" onclick="markAsPaid()">✅ Já Realizei o Pagamento</button>
+                    <p class="payment-note">A confirmação do pagamento será validada pelo administrador</p>
+                </div>
+            </div>
+
+            <!-- Lista de Meus Palpites -->
+            <div class="form-container" id="my-bets-section" style="margin-top: 40px;">
+                <h2 class="form-section-title">Meus Palpites</h2>
+                <div id="my-bets-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Bolão da Copa SKY FIT Academia. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGames();
+            loadMyBets();
+            
+            document.getElementById('jogo').addEventListener('change', function() {
+                updateGameInfo();
+            });
+
+            document.getElementById('palpite-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                savePalpite();
+            });
+        });
+
+        function loadGames() {
+            const games = loadFromLocalStorage('jogos') || [];
+            const now = new Date();
+            const availableGames = games.filter(game => new Date(game.data) > now);
+            
+            const select = document.getElementById('jogo');
+            
+            availableGames.forEach(game => {
+                const option = document.createElement('option');
+                const gameDate = new Date(game.data);
+                const formattedDate = gameDate.toLocaleDateString('pt-BR', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                option.value = game.id;
+                option.textContent = `${game.time_a} vs ${game.time_b} - ${formattedDate}`;
+                select.appendChild(option);
+            });
+        }
+
+        function updateGameInfo() {
+            const gameId = document.getElementById('jogo').value;
+            const games = loadFromLocalStorage('jogos') || [];
+            const game = games.find(g => g.id == gameId);
+
+            if (game) {
+                document.getElementById('time-a-name').textContent = game.time_a;
+                document.getElementById('time-b-name').textContent = game.time_b;
+                
+                const gameDate = new Date(game.data);
+                const formattedDate = gameDate.toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                document.getElementById('game-details').innerHTML = `
+                    <strong>${game.time_a} vs ${game.time_b}</strong><br>
+                    📅 ${formattedDate}<br>
+                    📍 ${game.local}<br>
+                    🎮 Grupo ${game.grupo}
+                `;
+                
+                document.getElementById('game-info-box').style.display = 'block';
+            }
+        }
+
+        function savePalpite() {
+            const nome = document.getElementById('nome').value.trim();
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const jogoId = document.getElementById('jogo').value;
+            const placarA = parseInt(document.getElementById('placar-a').value);
+            const placarB = parseInt(document.getElementById('placar-b').value);
+
+            if (!nome || !whatsapp || !jogoId) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            const games = loadFromLocalStorage('jogos') || [];
+            const game = games.find(g => g.id == jogoId);
+
+            const palpite = {
+                id: Date.now(),
+                nome: nome,
+                whatsapp: whatsapp,
+                email: email,
+                jogo_id: jogoId,
+                time_a: game.time_a,
+                time_b: game.time_b,
+                placar_a: placarA,
+                placar_b: placarB,
+                data_palpite: new Date().toISOString(),
+                pago: false,
+                pontos: 0
+            };
+
+            let palpites = loadFromLocalStorage('palpites') || [];
+            palpites.push(palpite);
+            saveToLocalStorage('palpites', palpites);
+
+            // Atualizar ou criar participante
+            let participantes = loadFromLocalStorage('participantes') || [];
+            let participante = participantes.find(p => p.nome === nome && p.whatsapp === whatsapp);
+
+            if (!participante) {
+                participante = {
+                    id: Date.now(),
+                    nome: nome,
+                    whatsapp: whatsapp,
+                    email: email,
+                    data_inscricao: new Date().toISOString(),
+                    pago: false,
+                    pontos: 0,
+                    acertos: 0
+                };
+                participantes.push(participante);
+                saveToLocalStorage('participantes', participantes);
+            }
+
+            // Mostrar sucesso
+            document.getElementById('palpite-form').style.display = 'none';
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('payment-section').style.display = 'block';
+            
+            // Gerar QR Code
+            document.getElementById('qrcode').innerHTML = '';
+            try {
+                new QRCode(document.getElementById('qrcode'), {
+                    text: '00020126580014br.gov.bcb.pix0136317212130001361001.0.053047522520400005303986540510.005802BR5913ONPLAY MARKE6009SAO PAULO62410503***63041D32',
+                    width: 200,
+                    height: 200
+                });
+            } catch (e) {
+                console.log('QR Code não gerado (biblioteca não disponível)');
+                document.getElementById('qrcode').innerHTML = '<p>QR Code disponível via app PIX</p>';
+            }
+
+            loadMyBets();
+        }
+
+        function copyPixCode() {
+            const pixCode = document.getElementById('pix-code');
+            pixCode.select();
+            document.execCommand('copy');
+            
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✅ Copiado!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        function markAsPaid() {
+            const nome = document.getElementById('nome').value.trim();
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+
+            if (!nome || !whatsapp) {
+                alert('Preencha seu nome e WhatsApp para marcar como pago!');
+                return;
+            }
+
+            let participantes = loadFromLocalStorage('participantes') || [];
+            const participante = participantes.find(p => p.nome === nome && p.whatsapp === whatsapp);
+
+            if (participante) {
+                participante.pendente_pagamento = true;
+                participante.data_pagamento_solicitado = new Date().toISOString();
+                saveToLocalStorage('participantes', participantes);
+                
+                alert('✅ Pagamento marcado como pendente de confirmação!\n\nO administrador receberá sua solicitação em breve.');
+                document.getElementById('palpite-form').reset();
+                document.getElementById('success-message').style.display = 'none';
+                document.getElementById('payment-section').style.display = 'none';
+                document.getElementById('palpite-form').style.display = 'block';
+                loadMyBets();
+            }
+        }
+
+        function loadMyBets() {
+            const nome = document.getElementById('nome').value.trim();
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+
+            if (!nome || !whatsapp) return;
+
+            const palpites = loadFromLocalStorage('palpites') || [];
+            const myBets = palpites.filter(p => p.nome === nome && p.whatsapp === whatsapp);
+
+            const container = document.getElementById('my-bets-list');
+            
+            if (myBets.length === 0) {
+                container.innerHTML = '<p class="text-center">Você ainda não fez nenhum palpite.</p>';
+                return;
+            }
+
+            container.innerHTML = myBets.map(bet => `
+                <div class="bet-card">
+                    <div class="bet-header">
+                        <span class="bet-date">${new Date(bet.data_palpite).toLocaleDateString('pt-BR')}</span>
+                    </div>
+                    <div class="bet-content">
+                        <div class="bet-match">
+                            <span>${bet.time_a}</span>
+                            <span class="bet-score">${bet.placar_a} x ${bet.placar_b}</span>
+                            <span>${bet.time_b}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Atualizar lista de palpites quando nome/whatsapp mudar
+        document.getElementById('nome').addEventListener('blur', loadMyBets);
+        document.getElementById('whatsapp').addEventListener('blur', loadMyBets);
+    </script>
+</body>
+</html>

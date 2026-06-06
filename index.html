@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolão da Copa 2026 SKY FIT</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' fill='%23FFD700'>⚽</text></svg>">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">Bolão SKY FIT</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link active">Início</a></li>
+                <li class="nav-item"><a href="palpites.html" class="nav-link">Palpitar</a></li>
+                <li class="nav-item"><a href="ranking.html" class="nav-link">Ranking</a></li>
+                <li class="nav-item"><a href="tabela.html" class="nav-link">Tabela</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Banner Principal -->
+    <section class="banner">
+        <div class="banner-content">
+            <div class="banner-background">
+                <div class="flag flag-br">🇧🇷</div>
+                <div class="flag flag-us">🇺🇸</div>
+                <div class="flag flag-mx">🇲🇽</div>
+            </div>
+            <div class="banner-text">
+                <h1 class="banner-title">BOLÃO DA COPA 2026</h1>
+                <p class="banner-subtitle">SKY FIT Academia</p>
+                <p class="banner-description">Faça seus palpites, pague via PIX e concorra aos prêmios!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Informações Principais -->
+    <section class="info-section">
+        <div class="container">
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">💰</div>
+                    <h3>Valor da Aposta</h3>
+                    <p class="info-value">R$ 10,00</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🏆</div>
+                    <h3>Prêmio Acumulado</h3>
+                    <p class="info-value" id="total-prize">R$ 0,00</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">👥</div>
+                    <h3>Participantes</h3>
+                    <p class="info-value" id="total-participants">0</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">✅</div>
+                    <h3>Pagos</h3>
+                    <p class="info-value" id="paid-participants">0</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Próximo Jogo -->
+    <section class="next-game-section">
+        <div class="container">
+            <h2 class="section-title">Próximo Jogo Disponível</h2>
+            <div class="next-game-card" id="next-game">
+                <div class="game-loading">
+                    <p>Carregando jogos...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Como Funciona -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Como Funciona</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Faça seu Palpite</h3>
+                    <p>Clique em "Palpitar" e registre seus palpites para os jogos da Copa</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Pague via PIX</h3>
+                    <p>Realize o pagamento de R$ 10,00 usando a chave PIX fornecida</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Acompanhe o Ranking</h3>
+                    <p>Veja seu desempenho e compare com outros participantes</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Concorra ao Prêmio</h3>
+                    <p>Acerte o máximo de placares e fique no topo do ranking!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sistema de Pontuação -->
+    <section class="scoring-section">
+        <div class="container">
+            <h2 class="section-title">Sistema de Pontuação</h2>
+            <div class="scoring-grid">
+                <div class="scoring-card">
+                    <div class="scoring-icon">🎯</div>
+                    <p><strong>Acertou o Vencedor:</strong> 1 ponto</p>
+                </div>
+                <div class="scoring-card">
+                    <div class="scoring-icon">🤝</div>
+                    <p><strong>Acertou o Empate:</strong> 1 ponto</p>
+                </div>
+                <div class="scoring-card">
+                    <div class="scoring-icon">⭐</div>
+                    <p><strong>Acertou o Placar:</strong> 5 pontos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Palpitar -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Pronto para começar?</h2>
+                <p>Faça seu palpite agora e tenha a chance de ganhar!</p>
+                <a href="palpites.html" class="btn btn-primary btn-lg">FAZER PALPITE</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Bolão da Copa SKY FIT Academia. Todos os direitos reservados.</p>
+            <p>Copa do Mundo 2026 - Canadá, México e Estados Unidos</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Carregar dados da página inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            loadNextGame();
+        });
+
+        function loadDashboardData() {
+            const data = loadFromLocalStorage('participantes') || [];
+            const totalParticipants = data.length;
+            const paidParticipants = data.filter(p => p.pago).length;
+            const totalPrize = paidParticipants * 10;
+
+            document.getElementById('total-participants').textContent = totalParticipants;
+            document.getElementById('paid-participants').textContent = paidParticipants;
+            document.getElementById('total-prize').textContent = `R$ ${totalPrize.toFixed(2).replace('.', ',')}`;
+        }
+
+        function loadNextGame() {
+            const games = loadFromLocalStorage('jogos') || [];
+            const now = new Date();
+            
+            // Encontrar próximo jogo não iniciado
+            const nextGame = games.find(game => new Date(game.data) > now && !game.resultado);
+
+            const container = document.getElementById('next-game');
+            
+            if (nextGame) {
+                const gameDate = new Date(nextGame.data);
+                const formattedDate = gameDate.toLocaleDateString('pt-BR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                container.innerHTML = `
+                    <div class="game-info">
+                        <div class="game-teams">
+                            <div class="team">
+                                <span class="team-flag">${getCountryFlag(nextGame.time_a)}</span>
+                                <span class="team-name">${nextGame.time_a}</span>
+                            </div>
+                            <div class="vs">vs</div>
+                            <div class="team">
+                                <span class="team-flag">${getCountryFlag(nextGame.time_b)}</span>
+                                <span class="team-name">${nextGame.time_b}</span>
+                            </div>
+                        </div>
+                        <div class="game-details">
+                            <p><strong>📅</strong> ${formattedDate}</p>
+                            <p><strong>📍</strong> ${nextGame.local}</p>
+                            <p><strong>🎮</strong> Grupo ${nextGame.grupo}</p>
+                        </div>
+                        <a href="palpites.html?jogo=${nextGame.id}" class="btn btn-primary">Fazer Palpite</a>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="game-info">
+                        <p class="text-center">Todos os jogos da fase de grupos foram encerrados!</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getCountryFlag(country) {
+            const flags = {
+                'Argentina': '🇦🇷', 'Brasil': '🇧🇷', 'Canadá': '🇨🇦', 'México': '🇲🇽',
+                'Estados Unidos': '🇺🇸', 'Uruguai': '🇺🇾', 'Paraguai': '🇵🇾', 'Colômbia': '🇨🇴',
+                'Peru': '🇵🇪', 'Equador': '🇪🇨', 'Bolívia': '🇧🇴', 'Chile': '🇨🇱',
+                'Venezuela': '🇻🇪', 'Panamá': '🇵🇦', 'Jamaica': '🇯🇲', 'Honduras': '🇭🇳',
+                'França': '🇫🇷', 'Espanha': '🇪🇸', 'Itália': '🇮🇹', 'Alemanha': '🇩🇪',
+                'Holanda': '🇳🇱', 'Bélgica': '🇧🇪', 'Portugal': '🇵🇹', 'Polônia': '🇵🇱',
+                'Suíça': '🇨🇭', 'Áustria': '🇦🇹', 'República Tcheca': '🇨🇿', 'Hungria': '🇭🇺',
+                'Romênia': '🇷🇴', 'Sérvia': '🇷🇸', 'Croácia': '🇭🇷', 'Grécia': '🇬🇷',
+                'Islândia': '🇮🇸', 'Dinamarca': '🇩🇰', 'Suécia': '🇸🇪', 'Noruega': '🇳🇴',
+                'Irlanda': '🇮🇪', 'Israel': '🇮🇱', 'Arábia Saudita': '🇸🇦', 'Irã': '🇮🇷',
+                'Iraque': '🇮🇶', 'Síria': '🇸🇾', 'Líbano': '🇱🇧', 'Jordânia': '🇯🇴',
+                'Emirados Árabes Unidos': '🇦🇪', 'Qatar': '🇶🇦', 'Omã': '🇴🇲', 'Bahrein': '🇧🇭',
+                'Coréia do Sul': '🇰🇷', 'Coréia do Norte': '🇰🇵', 'Japão': '🇯🇵', 'China': '🇨🇳',
+                'Tailândia': '🇹🇭', 'Vietnã': '🇻🇳', 'Indonésia': '🇮🇩', 'Malásia': '🇲🇾',
+                'Singapura': '🇸🇬', 'Filipinas': '🇵🇭', 'Austrália': '🇦🇺', 'Nova Zelândia': '🇳🇿',
+                'Egito': '🇪🇬', 'África do Sul': '🇿🇦', 'Nigéria': '🇳🇬', 'Camarões': '🇨🇲',
+                'Gana': '🇬🇭', 'Costa do Marfim': '🇨🇮', 'Senegal': '🇸🇳', 'Tunísia': '🇹🇳',
+                'Marrocos': '🇲🇦', 'Argélia': '🇩🇿', 'Líbia': '🇱🇾', 'Etiópia': '🇪🇹',
+                'Costa Rica': '🇨🇷', 'Inglaterra': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Escócia': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+                'País de Gales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿', 'Irlanda do Norte': '🏴󠁧󠁢󠁮󠁩󠁲󠁿'
+            };
+            return flags[country] || '🏳️';
+        }
+    </script>
+</body>
+</html>

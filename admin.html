@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Bolão da Copa 2026</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navegação Admin -->
+    <nav class="navbar admin-navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <span class="logo-icon">⚙️</span>
+                <span class="logo-text">Painel Admin</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" onclick="logout()" class="nav-link">Sair</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login -->
+    <div id="login-section" class="login-container">
+        <div class="login-box">
+            <h1>🔐 Painel Administrativo</h1>
+            <p>Bolão da Copa 2026 SKY FIT</p>
+            <form id="login-form">
+                <input type="password" id="admin-password" placeholder="Digite a senha" required>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Acessar</button>
+            </form>
+            <p id="login-error" class="error-message" style="display: none;"></p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-section" class="admin-dashboard" style="display: none;">
+        <div class="container">
+            <h1 class="page-title">Painel Administrativo</h1>
+
+            <!-- Menu de Abas -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="dashboard">📊 Dashboard</button>
+                <button class="admin-tab" data-tab="pagamentos">💰 Pagamentos</button>
+                <button class="admin-tab" data-tab="resultados">🏆 Resultados</button>
+                <button class="admin-tab" data-tab="participantes">👥 Participantes</button>
+                <button class="admin-tab" data-tab="palpites">🎯 Palpites</button>
+                <button class="admin-tab" data-tab="configuracoes">⚙️ Configurações</button>
+            </div>
+
+            <!-- TAB: Dashboard -->
+            <div id="dashboard-tab" class="admin-tab-content active">
+                <div class="admin-stats">
+                    <div class="admin-stat-card">
+                        <h3>Total de Participantes</h3>
+                        <p class="stat-value" id="admin-total-participants">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>Participantes Pagos</h3>
+                        <p class="stat-value" id="admin-paid-participants">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>Pendentes de Confirmação</h3>
+                        <p class="stat-value" id="admin-pending-participants">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>Prêmio Acumulado</h3>
+                        <p class="stat-value" id="admin-total-prize">R$ 0,00</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>Total de Palpites</h3>
+                        <p class="stat-value" id="admin-total-bets">0</p>
+                    </div>
+                    <div class="admin-stat-card">
+                        <h3>Jogos Finalizados</h3>
+                        <p class="stat-value" id="admin-finished-games">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Pagamentos -->
+            <div id="pagamentos-tab" class="admin-tab-content">
+                <h2>Gerenciar Pagamentos</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Participante</th>
+                            <th>WhatsApp</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pagamentos-table">
+                        <tr><td colspan="5" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB: Resultados -->
+            <div id="resultados-tab" class="admin-tab-content">
+                <h2>Inserir Resultados dos Jogos</h2>
+                <div class="form-container">
+                    <form id="resultado-form">
+                        <div class="form-group">
+                            <label for="resultado-jogo">Jogo *</label>
+                            <select id="resultado-jogo" required>
+                                <option value="">-- Selecione um jogo --</option>
+                            </select>
+                        </div>
+
+                        <div class="score-input-container">
+                            <div class="team-section">
+                                <div class="team-name" id="resultado-time-a">Time A</div>
+                                <input type="number" id="resultado-placar-a" min="0" max="99" required placeholder="0">
+                            </div>
+                            <div class="vs-separator">x</div>
+                            <div class="team-section">
+                                <div class="team-name" id="resultado-time-b">Time B</div>
+                                <input type="number" id="resultado-placar-b" min="0" max="99" required placeholder="0">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg btn-block">Salvar Resultado</button>
+                    </form>
+                </div>
+
+                <h3 style="margin-top: 40px;">Jogos com Resultados</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Jogo</th>
+                            <th>Resultado</th>
+                            <th>Local</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultados-table">
+                        <tr><td colspan="4" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB: Participantes -->
+            <div id="participantes-tab" class="admin-tab-content">
+                <h2>Gerenciar Participantes</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>WhatsApp</th>
+                            <th>Email</th>
+                            <th>Palpites</th>
+                            <th>Pontos</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="participantes-table">
+                        <tr><td colspan="7" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB: Palpites -->
+            <div id="palpites-tab" class="admin-tab-content">
+                <h2>Visualizar Todos os Palpites</h2>
+                <div class="admin-filters">
+                    <input type="text" id="palpites-search" placeholder="Buscar por nome ou WhatsApp..." class="search-input">
+                    <button onclick="exportarPalpites()" class="btn btn-secondary">📥 Exportar para Excel</button>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Participante</th>
+                            <th>Jogo</th>
+                            <th>Palpite</th>
+                            <th>Resultado</th>
+                            <th>Pontos</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="palpites-table">
+                        <tr><td colspan="6" class="text-center">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB: Configurações -->
+            <div id="configuracoes-tab" class="admin-tab-content">
+                <h2>Configurações do Bolão</h2>
+                
+                <div class="form-container">
+                    <div class="form-section">
+                        <h3>Pontuação</h3>
+                        <div class="form-group">
+                            <label for="points-vencedor">Pontos por Vencedor Certo:</label>
+                            <input type="number" id="points-vencedor" min="0" max="20" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="points-empate">Pontos por Empate Certo:</label>
+                            <input type="number" id="points-empate" min="0" max="20" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="points-placar">Pontos por Placar Exato:</label>
+                            <input type="number" id="points-placar" min="0" max="20" value="5">
+                        </div>
+                        <button onclick="saveConfiguracoes()" class="btn btn-primary">Salvar Configurações</button>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3>Inicializar Base de Dados</h3>
+                    <button onclick="initializeDatabase()" class="btn btn-danger btn-block">🔄 Carregar Jogos da Copa 2026</button>
+                    <p class="help-text">Clique para carregar todos os 48 jogos da Copa do Mundo 2026</p>
+                </div>
+
+                <div class="form-container">
+                    <h3>Exportar Dados</h3>
+                    <button onclick="exportarTodosOsDados()" class="btn btn-secondary btn-block">📊 Exportar Todos os Dados</button>
+                    <p class="help-text">Exporta participantes, palpites e resultados em JSON</p>
+                </div>
+
+                <div class="form-container">
+                    <h3>Limpar Dados</h3>
+                    <button onclick="limparTodosDados()" class="btn btn-danger btn-block">🗑️ Limpar Todos os Dados</button>
+                    <p class="help-text" style="color: red;">⚠️ Esta ação não pode ser desfeita!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Bolão da Copa SKY FIT Academia - Painel Administrativo</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

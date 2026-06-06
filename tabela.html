@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela de Jogos - Bolão da Copa 2026</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">Bolão SKY FIT</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Início</a></li>
+                <li class="nav-item"><a href="palpites.html" class="nav-link">Palpitar</a></li>
+                <li class="nav-item"><a href="ranking.html" class="nav-link">Ranking</a></li>
+                <li class="nav-item"><a href="tabela.html" class="nav-link active">Tabela</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Tabela de Jogos</h1>
+            <p class="page-subtitle">Confira todos os jogos da Copa do Mundo 2026</p>
+
+            <!-- Filtros -->
+            <div class="filter-section">
+                <button class="btn btn-filter active" data-filter="todos">Todos</button>
+                <button class="btn btn-filter" data-filter="proximos">Próximos</button>
+                <button class="btn btn-filter" data-filter="encerrados">Encerrados</button>
+                <button class="btn btn-filter" data-filter="grupo-a">Grupo A</button>
+                <button class="btn btn-filter" data-filter="grupo-b">Grupo B</button>
+                <button class="btn btn-filter" data-filter="grupo-c">Grupo C</button>
+                <button class="btn btn-filter" data-filter="grupo-d">Grupo D</button>
+            </div>
+
+            <!-- Jogos -->
+            <div id="games-container" class="games-container">
+                <!-- Gerado por JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Bolão da Copa SKY FIT Academia. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let currentFilter = 'todos';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGamesTable();
+            setupFilters();
+        });
+
+        function setupFilters() {
+            document.querySelectorAll('.btn-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    loadGamesTable();
+                });
+            });
+        }
+
+        function loadGamesTable() {
+            const games = loadFromLocalStorage('jogos') || [];
+            const now = new Date();
+
+            let filtered = games;
+
+            if (currentFilter === 'proximos') {
+                filtered = games.filter(g => new Date(g.data) > now && !g.resultado);
+            } else if (currentFilter === 'encerrados') {
+                filtered = games.filter(g => g.resultado);
+            } else if (currentFilter.startsWith('grupo-')) {
+                const grupo = currentFilter.split('-')[1].toUpperCase();
+                filtered = games.filter(g => g.grupo === grupo);
+            }
+
+            const container = document.getElementById('games-container');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-center">Nenhum jogo encontrado.</p>';
+                return;
+            }
+
+            // Agrupar por grupo
+            const grouped = {};
+            filtered.forEach(game => {
+                if (!grouped[game.grupo]) {
+                    grouped[game.grupo] = [];
+                }
+                grouped[game.grupo].push(game);
+            });
+
+            container.innerHTML = Object.entries(grouped).map(([grupo, jogos]) => `
+                <div class="games-group">
+                    <h2 class="group-title">Grupo ${grupo}</h2>
+                    <div class="games-list">
+                        ${jogos.map(game => renderGameCard(game)).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderGameCard(game) {
+            const gameDate = new Date(game.data);
+            const now = new Date();
+            const isUpcoming = gameDate > now && !game.resultado;
+            const isFinished = game.resultado;
+
+            const formattedDate = gameDate.toLocaleDateString('pt-BR', {
+                weekday: 'short',
+                month: '2-digit',
+                day: '2-digit'
+            });
+
+            const formattedTime = gameDate.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let scoreHTML = '';
+            if (isFinished) {
+                const [placarA, placarB] = game.resultado.split('x').map(s => s.trim());
+                scoreHTML = `<div class="game-score-finished">${placarA} <span class="score-sep">x</span> ${placarB}</div>`;
+            } else if (isUpcoming) {
+                scoreHTML = `<div class="game-score-upcoming"><a href="palpites.html?jogo=${game.id}" class="btn btn-sm btn-primary">Palpitar</a></div>`;
+            } else {
+                scoreHTML = `<div class="game-score-live">AO VIVO</div>`;
+            }
+
+            return `
+                <div class="game-card ${isFinished ? 'finished' : isUpcoming ? 'upcoming' : 'live'}">
+                    <div class="game-date-time">
+                        <span class="game-date">${formattedDate}</span>
+                        <span class="game-time">${formattedTime}</span>
+                    </div>
+                    <div class="game-content">
+                        <div class="team team-a">
+                            <span class="team-flag">${getCountryFlag(game.time_a)}</span>
+                            <span class="team-name">${game.time_a}</span>
+                        </div>
+                        ${scoreHTML}
+                        <div class="team team-b">
+                            <span class="team-flag">${getCountryFlag(game.time_b)}</span>
+                            <span class="team-name">${game.time_b}</span>
+                        </div>
+                    </div>
+                    <div class="game-location">📍 ${game.local}</div>
+                </div>
+            `;
+        }
+
+        function getCountryFlag(country) {
+            const flags = {
+                'Argentina': '🇦🇷', 'Brasil': '🇧🇷', 'Canadá': '🇨🇦', 'México': '🇲🇽',
+                'Estados Unidos': '🇺🇸', 'Uruguai': '🇺🇾', 'Paraguai': '🇵🇾', 'Colômbia': '🇨🇴',
+                'Peru': '🇵🇪', 'Equador': '🇪🇨', 'Bolívia': '🇧🇴', 'Chile': '🇨🇱',
+                'Venezuela': '🇻🇪', 'Panamá': '🇵🇦', 'Jamaica': '🇯🇲', 'Honduras': '🇭🇳',
+                'França': '🇫🇷', 'Espanha': '🇪🇸', 'Itália': '🇮🇹', 'Alemanha': '🇩🇪',
+                'Holanda': '🇳🇱', 'Bélgica': '🇧🇪', 'Portugal': '🇵🇹', 'Polônia': '🇵🇱',
+                'Suíça': '🇨🇭', 'Áustria': '🇦🇹', 'República Tcheca': '🇨🇿', 'Hungria': '🇭🇺',
+                'Romênia': '🇷🇴', 'Sérvia': '🇷🇸', 'Croácia': '🇭🇷', 'Grécia': '🇬🇷',
+                'Islândia': '🇮🇸', 'Dinamarca': '🇩🇰', 'Suécia': '🇸🇪', 'Noruega': '🇳🇴',
+                'Irlanda': '🇮🇪', 'Israel': '🇮🇱', 'Arábia Saudita': '🇸🇦', 'Irã': '🇮🇷',
+                'Iraque': '🇮🇶', 'Síria': '🇸🇾', 'Líbano': '🇱🇧', 'Jordânia': '🇯🇴',
+                'Emirados Árabes Unidos': '🇦🇪', 'Qatar': '🇶🇦', 'Omã': '🇴🇲', 'Bahrein': '🇧🇭',
+                'Coréia do Sul': '🇰🇷', 'Japão': '🇯🇵', 'China': '🇨🇳',
+                'Tailândia': '🇹🇭', 'Vietnã': '🇻🇳', 'Indonésia': '🇮🇩', 'Malásia': '🇲🇾',
+                'Singapura': '🇸🇬', 'Austrália': '🇦🇺', 'Nova Zelândia': '🇳🇿',
+                'Egito': '🇪🇬', 'África do Sul': '🇿🇦', 'Nigéria': '🇳🇬', 'Camarões': '🇨🇲',
+                'Gana': '🇬🇭', 'Senegal': '🇸🇳', 'Tunísia': '🇹🇳',
+                'Marrocos': '🇲🇦', 'Argélia': '🇩🇿', 'Costa Rica': '🇨🇷', 'Inglaterra': '🏴󠁧󠁢󠁥󠁮󠁧󠁿'
+            };
+            return flags[country] || '🏳️';
+        }
+    </script>
+</body>
+</html>
