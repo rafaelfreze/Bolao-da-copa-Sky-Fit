@@ -3,367 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Bolão da Copa 2026</title>
+    <title>Painel Admin - Bolão Online</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Navegação Admin -->
-    <nav class="navbar admin-navbar">
-        <div class="navbar-container">
-            <div class="navbar-logo">
-                <span class="logo-icon">⚙️</span>
+    <nav class="navbar navbar-admin">
+        <div class="container">
+            <div class="navbar-brand">
+                <span class="logo-emoji">⚙️</span>
                 <span class="logo-text">Painel Admin</span>
             </div>
             <ul class="nav-menu">
-                <li class="nav-item"><a href="#" onclick="logout()" class="nav-link">Sair</a></li>
+                <li><a href="index.html" class="nav-link">← Voltar</a></li>
+                <li><a href="#" onclick="fazerLogout()" class="nav-link">Sair</a></li>
             </ul>
         </div>
     </nav>
 
     <!-- Login -->
-    <div id="login-section" class="login-container">
-        <div class="login-box">
+    <div id="login-section" class="login-section">
+        <div class="login-container">
             <h1>🔐 Painel Administrativo</h1>
-            <p>Bolão da Copa 2026 SKY FIT</p>
-            <form id="login-form">
-                <input type="password" id="admin-password" placeholder="Digite a senha" required>
-                <button type="submit" class="btn btn-primary btn-lg btn-block">Acessar</button>
+            <p>Bolão Online</p>
+            <form id="login-form" onsubmit="fazerLogin(event)">
+                <input 
+                    type="password" 
+                    id="senha-input" 
+                    placeholder="Digite a senha"
+                    required
+                    autofocus
+                >
+                <button type="submit" class="btn btn-primary btn-lg btn-block">ENTRAR</button>
             </form>
-            <p id="login-error" class="error-message" style="display: none;"></p>
+            <p id="erro-login" class="erro-msg" style="display: none;"></p>
         </div>
     </div>
 
     <!-- Admin Dashboard -->
-    <div id="admin-section" class="admin-dashboard" style="display: none;">
+    <main id="admin-main" class="main-content admin-main" style="display: none;">
         <div class="container">
             <h1 class="page-title">Painel Administrativo</h1>
 
-            <!-- Menu de Abas -->
+            <!-- Abas -->
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="dashboard">📊 Dashboard</button>
-                <button class="admin-tab" data-tab="jogos">🎮 Gerenciar Jogos</button>
-                <button class="admin-tab" data-tab="pagamentos">💰 Pagamentos</button>
+                <button class="admin-tab" data-tab="jogos">🎮 Jogos</button>
                 <button class="admin-tab" data-tab="resultados">🏆 Resultados</button>
-                <button class="admin-tab" data-tab="participantes">👥 Participantes</button>
-                <button class="admin-tab" data-tab="palpites">🎯 Palpites</button>
+                <button class="admin-tab" data-tab="pagamentos">💰 Pagamentos</button>
                 <button class="admin-tab" data-tab="configuracoes">⚙️ Configurações</button>
             </div>
 
             <!-- TAB: Dashboard -->
             <div id="dashboard-tab" class="admin-tab-content active">
-                <div class="admin-stats">
-                    <div class="admin-stat-card">
-                        <h3>Total de Participantes</h3>
-                        <p class="stat-value" id="admin-total-participants">0</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Participantes</h3>
+                        <p class="stat-value" id="dash-participantes">0</p>
                     </div>
-                    <div class="admin-stat-card">
-                        <h3>Participantes Pagos</h3>
-                        <p class="stat-value" id="admin-paid-participants">0</p>
+                    <div class="stat-card">
+                        <h3>Pagos</h3>
+                        <p class="stat-value" id="dash-pagos">0</p>
                     </div>
-                    <div class="admin-stat-card">
-                        <h3>Pendentes de Confirmação</h3>
-                        <p class="stat-value" id="admin-pending-participants">0</p>
+                    <div class="stat-card">
+                        <h3>Pendentes</h3>
+                        <p class="stat-value" id="dash-pendentes">0</p>
                     </div>
-                    <div class="admin-stat-card">
+                    <div class="stat-card">
                         <h3>Prêmio Acumulado</h3>
-                        <p class="stat-value" id="admin-total-prize">R$ 0,00</p>
+                        <p class="stat-value" id="dash-premio">R$ 0,00</p>
                     </div>
-                    <div class="admin-stat-card">
+                    <div class="stat-card">
                         <h3>Total de Palpites</h3>
-                        <p class="stat-value" id="admin-total-bets">0</p>
+                        <p class="stat-value" id="dash-palpites">0</p>
                     </div>
-                    <div class="admin-stat-card">
-                        <h3>Jogos Finalizados</h3>
-                        <p class="stat-value" id="admin-finished-games">0</p>
+                    <div class="stat-card">
+                        <h3>Jogos Cadastrados</h3>
+                        <p class="stat-value" id="dash-jogos">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Jogos com Resultado</h3>
+                        <p class="stat-value" id="dash-resultados">0</p>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB: Gerenciar Jogos -->
+            <!-- TAB: Jogos -->
             <div id="jogos-tab" class="admin-tab-content">
                 <h2>Gerenciar Jogos</h2>
-                
-                <div class="form-container">
+
+                <!-- Formulário -->
+                <div class="form-card">
                     <h3>Adicionar/Editar Jogo</h3>
-                    <form id="jogo-form">
+                    <form id="form-jogo" onsubmit="salvarJogo(event)">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="jogo-id">ID do Jogo (auto):</label>
-                                <input type="text" id="jogo-id" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="jogo-fase">Fase *</label>
-                                <select id="jogo-fase" required>
+                                <label>Fase *</label>
+                                <select id="form-fase" required>
                                     <option value="">-- Selecione --</option>
-                                    <option value="Grupo A">Grupo A</option>
-                                    <option value="Grupo B">Grupo B</option>
-                                    <option value="Grupo C">Grupo C</option>
-                                    <option value="Grupo D">Grupo D</option>
-                                    <option value="Grupo E">Grupo E</option>
-                                    <option value="Grupo F">Grupo F</option>
-                                    <option value="Grupo G">Grupo G</option>
-                                    <option value="Grupo H">Grupo H</option>
-                                    <option value="Oitavas de Final">Oitavas de Final</option>
-                                    <option value="Quartas de Final">Quartas de Final</option>
+                                    <option value="Fase de Grupos">Fase de Grupos</option>
+                                    <option value="Oitavas">Oitavas de Final</option>
+                                    <option value="Quartas">Quartas de Final</option>
                                     <option value="Semifinal">Semifinal</option>
+                                    <option value="Terceiro Lugar">Terceiro Lugar</option>
                                     <option value="Final">Final</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group">
-                                <label for="jogo-time-a">Time A *</label>
-                                <input type="text" id="jogo-time-a" required placeholder="Ex: Brasil">
+                                <label>Time A *</label>
+                                <input type="text" id="form-time-a" placeholder="Ex: Brasil" required>
                             </div>
                             <div class="form-group">
-                                <label for="jogo-time-b">Time B *</label>
-                                <input type="text" id="jogo-time-b" required placeholder="Ex: Argentina">
+                                <label>Time B *</label>
+                                <input type="text" id="form-time-b" placeholder="Ex: Argentina" required>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="jogo-data">Data *</label>
-                                <input type="date" id="jogo-data" required>
+                                <label>Data *</label>
+                                <input type="date" id="form-data" required>
                             </div>
                             <div class="form-group">
-                                <label for="jogo-hora">Horário *</label>
-                                <input type="time" id="jogo-hora" required>
+                                <label>Horário *</label>
+                                <input type="time" id="form-hora" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Local *</label>
+                                <input type="text" id="form-local" placeholder="Ex: New York, USA" required>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="jogo-local">Local *</label>
-                                <input type="text" id="jogo-local" required placeholder="Ex: São Paulo, Brasil">
-                            </div>
-                            <div class="form-group">
-                                <label for="jogo-ativo">Status</label>
-                                <select id="jogo-ativo">
-                                    <option value="true">✅ Ativo (Aceita Palpites)</option>
-                                    <option value="false">❌ Inativo (Bloqueado)</option>
+                                <label>Status</label>
+                                <select id="form-ativo">
+                                    <option value="true">✅ Ativo</option>
+                                    <option value="false">❌ Inativo</option>
                                 </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="jogo-resultado">Resultado (opcional)</label>
-                                <input type="text" id="jogo-resultado" placeholder="Ex: 2x1">
                             </div>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">💾 Salvar Jogo</button>
+                            <button type="submit" class="btn btn-primary">💾 Salvar</button>
                             <button type="button" class="btn btn-secondary" onclick="limparFormJogo()">🔄 Limpar</button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Filtros -->
-                <div class="admin-filters" style="margin-top: 2rem;">
-                    <input type="text" id="jogos-search" placeholder="Buscar por times..." class="search-input">
-                    <select id="jogos-filter-fase" class="filter-select">
-                        <option value="">Todas as Fases</option>
-                        <option value="Grupo A">Grupo A</option>
-                        <option value="Grupo B">Grupo B</option>
-                        <option value="Grupo C">Grupo C</option>
-                        <option value="Grupo D">Grupo D</option>
-                        <option value="Grupo E">Grupo E</option>
-                        <option value="Grupo F">Grupo F</option>
-                        <option value="Grupo G">Grupo G</option>
-                        <option value="Grupo H">Grupo H</option>
-                        <option value="Oitavas de Final">Oitavas de Final</option>
-                        <option value="Quartas de Final">Quartas de Final</option>
-                        <option value="Semifinal">Semifinal</option>
-                        <option value="Final">Final</option>
-                    </select>
-                    <button onclick="exportarJogos()" class="btn btn-secondary">📥 Exportar Jogos</button>
+                <!-- Lista de Jogos -->
+                <div class="form-card">
+                    <h3>Jogos Cadastrados</h3>
+                    <div id="lista-jogos" class="jogos-lista">
+                        <p class="text-center text-muted">Nenhum jogo cadastrado.</p>
+                    </div>
                 </div>
-
-                <!-- Tabela de Jogos -->
-                <table class="admin-table" style="margin-top: 2rem;">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Fase</th>
-                            <th>Time A</th>
-                            <th>Time B</th>
-                            <th>Data/Hora</th>
-                            <th>Local</th>
-                            <th>Resultado</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="jogos-table">
-                        <tr><td colspan="9" class="text-center">Carregando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TAB: Pagamentos -->
-            <div id="pagamentos-tab" class="admin-tab-content">
-                <h2>Gerenciar Pagamentos</h2>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Participante</th>
-                            <th>WhatsApp</th>
-                            <th>Status</th>
-                            <th>Data</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pagamentos-table">
-                        <tr><td colspan="5" class="text-center">Carregando...</td></tr>
-                    </tbody>
-                </table>
             </div>
 
             <!-- TAB: Resultados -->
             <div id="resultados-tab" class="admin-tab-content">
-                <h2>Inserir Resultados dos Jogos</h2>
-                <div class="form-container">
-                    <form id="resultado-form">
+                <h2>Lançar Resultados</h2>
+
+                <div class="form-card">
+                    <form id="form-resultado" onsubmit="salvarResultado(event)">
                         <div class="form-group">
-                            <label for="resultado-jogo">Jogo *</label>
-                            <select id="resultado-jogo" required>
+                            <label>Jogo *</label>
+                            <select id="form-resultado-jogo" required>
                                 <option value="">-- Selecione um jogo --</option>
                             </select>
                         </div>
 
                         <div class="score-input-container">
-                            <div class="team-section">
-                                <div class="team-name" id="resultado-time-a">Time A</div>
-                                <input type="number" id="resultado-placar-a" min="0" max="99" required placeholder="0">
+                            <div class="team-input">
+                                <label id="label-jogo-time-a">Time A</label>
+                                <input type="number" id="form-resultado-a" min="0" max="99" required placeholder="0" class="score-input">
                             </div>
-                            <div class="vs-separator">x</div>
-                            <div class="team-section">
-                                <div class="team-name" id="resultado-time-b">Time B</div>
-                                <input type="number" id="resultado-placar-b" min="0" max="99" required placeholder="0">
+                            <div class="vs-separator">×</div>
+                            <div class="team-input">
+                                <label id="label-jogo-time-b">Time B</label>
+                                <input type="number" id="form-resultado-b" min="0" max="99" required placeholder="0" class="score-input">
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-success btn-lg btn-block">Salvar Resultado</button>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">💾 LANÇAR RESULTADO</button>
                     </form>
                 </div>
 
-                <h3 style="margin-top: 40px;">Jogos com Resultados</h3>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Jogo</th>
-                            <th>Resultado</th>
-                            <th>Local</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultados-table">
-                        <tr><td colspan="4" class="text-center">Carregando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TAB: Participantes -->
-            <div id="participantes-tab" class="admin-tab-content">
-                <h2>Gerenciar Participantes</h2>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>WhatsApp</th>
-                            <th>Email</th>
-                            <th>Palpites</th>
-                            <th>Pontos</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="participantes-table">
-                        <tr><td colspan="7" class="text-center">Carregando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TAB: Palpites -->
-            <div id="palpites-tab" class="admin-tab-content">
-                <h2>Visualizar Todos os Palpites</h2>
-                <div class="admin-filters">
-                    <input type="text" id="palpites-search" placeholder="Buscar por nome ou WhatsApp..." class="search-input">
-                    <button onclick="exportarPalpites()" class="btn btn-secondary">📥 Exportar para Excel</button>
+                <div class="form-card">
+                    <h3>Resultados Lançados</h3>
+                    <div id="lista-resultados" class="resultados-lista">
+                        <p class="text-center text-muted">Nenhum resultado lançado.</p>
+                    </div>
                 </div>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Participante</th>
-                            <th>Jogo</th>
-                            <th>Palpite</th>
-                            <th>Resultado</th>
-                            <th>Pontos</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody id="palpites-table">
-                        <tr><td colspan="6" class="text-center">Carregando...</td></tr>
-                    </tbody>
-                </table>
+            </div>
+
+            <!-- TAB: Pagamentos -->
+            <div id="pagamentos-tab" class="admin-tab-content">
+                <h2>Confirmar Pagamentos</h2>
+
+                <div class="form-card">
+                    <div id="lista-pagamentos" class="pagamentos-lista">
+                        <p class="text-center text-muted">Nenhum participante cadastrado.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB: Configurações -->
             <div id="configuracoes-tab" class="admin-tab-content">
                 <h2>Configurações do Bolão</h2>
-                
-                <div class="form-container">
-                    <div class="form-section">
-                        <h3>Pontuação</h3>
+
+                <div class="form-card">
+                    <h3>Dados do Bolão</h3>
+                    <form id="form-config" onsubmit="salvarConfiguracao(event)">
                         <div class="form-group">
-                            <label for="points-vencedor">Pontos por Vencedor Certo:</label>
-                            <input type="number" id="points-vencedor" min="0" max="20" value="1">
+                            <label>Nome do Bolão</label>
+                            <input type="text" id="config-nome" placeholder="Ex: Bolão Online">
                         </div>
+
                         <div class="form-group">
-                            <label for="points-empate">Pontos por Empate Certo:</label>
-                            <input type="number" id="points-empate" min="0" max="20" value="1">
+                            <label>Valor do Palpite (R$)</label>
+                            <input type="number" id="config-valor" min="0" step="0.01" placeholder="10.00">
                         </div>
+
                         <div class="form-group">
-                            <label for="points-placar">Pontos por Placar Exato:</label>
-                            <input type="number" id="points-placar" min="0" max="20" value="5">
+                            <label>Chave PIX</label>
+                            <input type="text" id="config-pix" placeholder="Ex: seu@email.com ou CPF">
                         </div>
-                        <button onclick="saveConfiguracoes()" class="btn btn-primary">Salvar Configurações</button>
-                    </div>
+
+                        <div class="form-group">
+                            <label>Recebedor PIX</label>
+                            <input type="text" id="config-recebedor" placeholder="Ex: Seu Nome">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Texto do Prêmio</label>
+                            <textarea id="config-premio" placeholder="Ex: Prêmio para o campeão!"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">💾 SALVAR CONFIGURAÇÕES</button>
+                    </form>
                 </div>
 
-                <div class="form-container">
-                    <h3>Inicializar Base de Dados</h3>
-                    <button onclick="initializeDatabase()" class="btn btn-danger btn-block">🔄 Carregar Jogos Padrão da Copa 2026</button>
-                    <p class="help-text">Clique para carregar todos os 48 jogos da fase de grupos da Copa do Mundo 2026</p>
+                <div class="form-card">
+                    <h3>Sistema de Pontuação</h3>
+                    <form id="form-pontos" onsubmit="salvarPontuacao(event)">
+                        <div class="form-group">
+                            <label>Pontos por Resultado Certo</label>
+                            <input type="number" id="pontos-resultado" min="0" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pontos por Empate Certo</label>
+                            <input type="number" id="pontos-empate" min="0" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pontos por Placar Exato</label>
+                            <input type="number" id="pontos-exato" min="0" value="5">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">💾 SALVAR PONTUAÇÃO</button>
+                    </form>
                 </div>
 
-                <div class="form-container">
-                    <h3>Exportar Dados</h3>
-                    <button onclick="exportarTodosOsDados()" class="btn btn-secondary btn-block">📊 Exportar Todos os Dados</button>
-                    <p class="help-text">Exporta participantes, palpites, jogos e configurações em JSON</p>
-                </div>
-
-                <div class="form-container">
-                    <h3>Limpar Dados</h3>
-                    <button onclick="limparTodosDados()" class="btn btn-danger btn-block">🗑️ Limpar Todos os Dados</button>
-                    <p class="help-text" style="color: red;">⚠️ Esta ação não pode ser desfeita!</p>
+                <div class="form-card">
+                    <h3>Ferramentas</h3>
+                    <button class="btn btn-danger btn-block" onclick="exportarDados()">📥 EXPORTAR DADOS (JSON)</button>
+                    <button class="btn btn-danger btn-block" onclick="limparTodosDados()" style="margin-top: 1rem;">🗑️ LIMPAR TODOS OS DADOS</button>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Rodapé -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 Bolão da Copa SKY FIT Academia - Painel Administrativo</p>
+            <p>&copy; 2026 Bolão Online - Painel Administrativo</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
     <script src="admin.js"></script>
-    <script src="admin-jogos.js"></script>
 </body>
 </html>
