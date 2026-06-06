@@ -77,7 +77,7 @@ function setupAdminTabs() {
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const tabName = this.dataset.tab;
-            switchAdminTab(tabName);
+            window.switchAdminTab(tabName);
         });
     });
 }
