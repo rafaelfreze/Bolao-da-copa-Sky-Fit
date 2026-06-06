@@ -2,7 +2,7 @@
  * =====================================
  * GERENCIAMENTO DE JOGOS
  * =====================================
- * Script para gerenciar jogos no painel admin
+ * Agora salva localmente e também envia para Google Sheets
  */
 
 let jogoEmEdicao = null;
@@ -11,9 +11,18 @@ document.addEventListener('DOMContentLoaded', function() {
     setupJogosTab();
 });
 
-// =====================================
-// SETUP DA ABA DE JOGOS
-// =====================================
+function getLocal(chave) {
+    if (typeof obterDados === 'function') return obterDados(chave);
+    if (typeof loadFromLocalStorage === 'function') return loadFromLocalStorage(chave);
+    const dados = localStorage.getItem(chave);
+    return dados ? JSON.parse(dados) : null;
+}
+
+function setLocal(chave, dados) {
+    if (typeof salvarDados === 'function') return salvarDados(chave, dados);
+    if (typeof saveToLocalStorage === 'function') return saveToLocalStorage(chave, dados);
+    localStorage.setItem(chave, JSON.stringify(dados));
+}
 
 function setupJogosTab() {
     const form = document.getElementById('jogo-form');
@@ -33,19 +42,16 @@ function setupJogosTab() {
     }
 }
 
-// =====================================
-// CARREGAR E EXIBIR JOGOS
-// =====================================
-
 function carregarJogosTab() {
-    const jogos = loadFromLocalStorage('jogos') || [];
+    const jogos = getLocal('jogos') || [];
     exibirTabelaJogos(jogos);
 }
 
 function exibirTabelaJogos(jogos) {
     const table = document.getElementById('jogos-table');
-    
-    if (jogos.length === 0) {
+    if (!table) return;
+
+    if (!jogos || jogos.length === 0) {
         table.innerHTML = '<tr><td colspan="9" class="text-center">Nenhum jogo cadastrado</td></tr>';
         return;
     }
@@ -53,48 +59,59 @@ function exibirTabelaJogos(jogos) {
     table.innerHTML = jogos.map(jogo => `
         <tr>
             <td><strong>${jogo.id}</strong></td>
-            <td>
-                <span class="fase-badge">${jogo.fase}</span>
-            </td>
-            <td>${jogo.time_a}</td>
-            <td>${jogo.time_b}</td>
-            <td>
-                <small>
-                    ${formatarDataHora(jogo.data, jogo.hora)}
-                </small>
-            </td>
-            <td><small>${jogo.local}</small></td>
-            <td>
-                ${jogo.resultado ? `<strong class="resultado-badge">${jogo.resultado}</strong>` : '-'}
-            </td>
+            <td><span class="fase-badge">${jogo.fase || '-'}</span></td>
+            <td>${jogo.time_a || '-'}</td>
+            <td>${jogo.time_b || '-'}</td>
+            <td><small>${formatarDataHoraJogo(jogo.data, jogo.hora)}</small></td>
+            <td><small>${jogo.local || '-'}</small></td>
+            <td>${jogo.resultado ? `<strong class="resultado-badge">${jogo.resultado}</strong>` : '-'}</td>
             <td>
                 <span class="status-badge ${jogo.ativo ? 'ativo' : 'inativo'}">
                     ${jogo.ativo ? '✅ Ativo' : '❌ Inativo'}
                 </span>
             </td>
             <td>
-                <button onclick="editarJogo(${jogo.id})" class="btn btn-sm btn-secondary" title="Editar">✏️</button>
-                <button onclick="deletarJogo(${jogo.id})" class="btn btn-sm btn-danger" title="Deletar">🗑️</button>
+                <button onclick="editarJogo(${Number(jogo.id)})" class="btn btn-sm btn-secondary" title="Editar">✏️</button>
+                <button onclick="deletarJogo(${Number(jogo.id)})" class="btn btn-sm btn-danger" title="Deletar">🗑️</button>
             </td>
         </tr>
     `).join('');
 }
 
-function formatarDataHora(data, hora) {
+function formatarDataHoraJogo(data, hora) {
     if (!data) return '-';
-    const date = new Date(data);
-    const dataFormatada = date.toLocaleDateString('pt-BR');
-    return `${dataFormatada} ${hora || ''}`;
+    const partes = String(data).split('-');
+    if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]} ${hora || ''}`;
+    }
+    return `${data} ${hora || ''}`;
 }
 
-// =====================================
-// CRIAR/EDITAR JOGO
-// =====================================
+async function enviarJogoGoogleSheets(jogo) {
+    if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
+        console.warn('GOOGLE_SCRIPT_URL não definida no script.js');
+        return false;
+    }
 
-function salvarJogo(e) {
+    try {
+        const resposta = await fetch(`${GOOGLE_SCRIPT_URL}?action=adicionar_jogo`, {
+            method: 'POST',
+            body: JSON.stringify(jogo)
+        });
+
+        const retorno = await resposta.json();
+        console.log('Retorno Google Sheets:', retorno);
+
+        return retorno.sucesso === true;
+    } catch (erro) {
+        console.error('Erro ao enviar jogo para Google Sheets:', erro);
+        return false;
+    }
+}
+
+async function salvarJogo(e) {
     e.preventDefault();
 
-    const id = document.getElementById('jogo-id').value;
     const fase = document.getElementById('jogo-fase').value;
     const time_a = document.getElementById('jogo-time-a').value.trim();
     const time_b = document.getElementById('jogo-time-b').value.trim();
@@ -102,18 +119,18 @@ function salvarJogo(e) {
     const hora = document.getElementById('jogo-hora').value;
     const local = document.getElementById('jogo-local').value.trim();
     const ativo = document.getElementById('jogo-ativo').value === 'true';
-    const resultado = document.getElementById('jogo-resultado').value.trim() || null;
+    const resultado = document.getElementById('jogo-resultado').value.trim() || '';
 
     if (!fase || !time_a || !time_b || !data || !hora || !local) {
         alert('Preencha todos os campos obrigatórios!');
         return;
     }
 
-    let jogos = loadFromLocalStorage('jogos') || [];
+    let jogos = getLocal('jogos') || [];
 
     if (jogoEmEdicao) {
-        // Atualizar jogo existente
-        const index = jogos.findIndex(j => j.id === jogoEmEdicao);
+        const index = jogos.findIndex(j => Number(j.id) === Number(jogoEmEdicao));
+
         if (index !== -1) {
             jogos[index] = {
                 ...jogos[index],
@@ -124,15 +141,17 @@ function salvarJogo(e) {
                 hora,
                 local,
                 ativo,
-                resultado
+                resultado: resultado || null
             };
-            alert('✅ Jogo atualizado com sucesso!');
+
+            setLocal('jogos', jogos);
+
+            alert('✅ Jogo atualizado localmente.\n\nPara atualizar na planilha, por enquanto edite a linha manualmente no Google Sheets.');
         }
     } else {
-        // Criar novo jogo
-        const novoId = jogos.length > 0 ? Math.max(...jogos.map(j => j.id)) + 1 : 1;
-        
-        jogos.push({
+        const novoId = jogos.length > 0 ? Math.max(...jogos.map(j => Number(j.id) || 0)) + 1 : 1;
+
+        const novoJogo = {
             id: novoId,
             fase,
             time_a,
@@ -142,26 +161,37 @@ function salvarJogo(e) {
             local,
             ativo,
             resultado: resultado || null
-        });
-        alert('✅ Jogo criado com sucesso!');
+        };
+
+        jogos.push(novoJogo);
+        setLocal('jogos', jogos);
+
+        const enviado = await enviarJogoGoogleSheets(novoJogo);
+
+        if (enviado) {
+            alert('✅ Jogo criado e enviado para a planilha Google Sheets!');
+        } else {
+            alert('⚠️ Jogo criado no navegador, mas não consegui enviar para a planilha.\nVerifique a URL do Apps Script e a implantação.');
+        }
     }
 
-    saveToLocalStorage('jogos', jogos);
     limparFormJogo();
     carregarJogosTab();
-    loadAdminDashboard();
+
+    if (typeof loadAdminDashboard === 'function') {
+        loadAdminDashboard();
+    }
 }
 
 function editarJogo(jogoId) {
-    const jogos = loadFromLocalStorage('jogos') || [];
-    const jogo = jogos.find(j => j.id === jogoId);
+    const jogos = getLocal('jogos') || [];
+    const jogo = jogos.find(j => Number(j.id) === Number(jogoId));
 
     if (!jogo) {
         alert('Jogo não encontrado!');
         return;
     }
 
-    // Preencher o formulário
     document.getElementById('jogo-id').value = jogo.id;
     document.getElementById('jogo-fase').value = jogo.fase;
     document.getElementById('jogo-time-a').value = jogo.time_a;
@@ -169,128 +199,120 @@ function editarJogo(jogoId) {
     document.getElementById('jogo-data').value = jogo.data;
     document.getElementById('jogo-hora').value = jogo.hora;
     document.getElementById('jogo-local').value = jogo.local;
-    document.getElementById('jogo-ativo').value = jogo.ativo.toString();
+    document.getElementById('jogo-ativo').value = String(jogo.ativo);
     document.getElementById('jogo-resultado').value = jogo.resultado || '';
 
     jogoEmEdicao = jogoId;
 
-    // Scroll para o formulário
     document.getElementById('jogo-form').scrollIntoView({ behavior: 'smooth' });
 
-    // Atualizar botão
     const botao = document.querySelector('#jogo-form button[type="submit"]');
-    botao.textContent = '💾 Atualizar Jogo';
+    if (botao) botao.textContent = '💾 Atualizar Jogo';
 }
 
 function limparFormJogo() {
     document.getElementById('jogo-form').reset();
     document.getElementById('jogo-id').value = '';
     jogoEmEdicao = null;
-    
+
     const botao = document.querySelector('#jogo-form button[type="submit"]');
-    botao.textContent = '💾 Salvar Jogo';
+    if (botao) botao.textContent = '💾 Salvar Jogo';
 }
 
 function deletarJogo(jogoId) {
-    if (!confirm('Tem certeza que deseja deletar este jogo?\n\nTodos os palpites associados também serão removidos.')) {
+    if (!confirm('Tem certeza que deseja deletar este jogo?\n\nOs palpites associados também serão removidos apenas deste navegador.')) {
         return;
     }
 
-    let jogos = loadFromLocalStorage('jogos') || [];
-    let palpites = loadFromLocalStorage('palpites') || [];
+    let jogos = getLocal('jogos') || [];
+    let palpites = getLocal('palpites') || [];
 
-    // Remover jogo
-    jogos = jogos.filter(j => j.id !== jogoId);
+    jogos = jogos.filter(j => Number(j.id) !== Number(jogoId));
+    palpites = palpites.filter(p => Number(p.jogo_id) !== Number(jogoId));
 
-    // Remover palpites do jogo
-    palpites = palpites.filter(p => p.jogo_id !== jogoId);
+    setLocal('jogos', jogos);
+    setLocal('palpites', palpites);
 
-    saveToLocalStorage('jogos', jogos);
-    saveToLocalStorage('palpites', palpites);
-
-    alert('✅ Jogo deletado com sucesso!');
+    alert('✅ Jogo deletado localmente.\n\nSe ele estiver na planilha, delete a linha manualmente no Google Sheets.');
     carregarJogosTab();
-    loadAdminDashboard();
+
+    if (typeof loadAdminDashboard === 'function') {
+        loadAdminDashboard();
+    }
 }
 
-// =====================================
-// FILTRAR JOGOS
-// =====================================
-
 function filtrarJogos() {
-    const searchTerm = document.getElementById('jogos-search').value.toLowerCase();
-    const filterFase = document.getElementById('jogos-filter-fase').value;
+    const searchInput = document.getElementById('jogos-search');
+    const filterFaseInput = document.getElementById('jogos-filter-fase');
 
-    let jogos = loadFromLocalStorage('jogos') || [];
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+    const filterFase = filterFaseInput ? filterFaseInput.value : '';
+
+    let jogos = getLocal('jogos') || [];
 
     jogos = jogos.filter(jogo => {
-        const matchSearch = jogo.time_a.toLowerCase().includes(searchTerm) || 
-                           jogo.time_b.toLowerCase().includes(searchTerm);
+        const matchSearch =
+            String(jogo.time_a || '').toLowerCase().includes(searchTerm) ||
+            String(jogo.time_b || '').toLowerCase().includes(searchTerm);
+
         const matchFase = !filterFase || jogo.fase === filterFase;
-        
+
         return matchSearch && matchFase;
     });
 
     exibirTabelaJogos(jogos);
 }
 
-// =====================================
-// EXPORTAR JOGOS
-// =====================================
-
 function exportarJogos() {
-    const jogos = loadFromLocalStorage('jogos') || [];
+    const jogos = getLocal('jogos') || [];
 
     const data = jogos.map(jogo => ({
         'ID': jogo.id,
         'Fase': jogo.fase,
         'Time A': jogo.time_a,
         'Time B': jogo.time_b,
-        'Data': formatarDataHora(jogo.data, jogo.hora),
+        'Data': formatarDataHoraJogo(jogo.data, jogo.hora),
         'Local': jogo.local,
         'Resultado': jogo.resultado || '-',
         'Status': jogo.ativo ? 'Ativo' : 'Inativo'
     }));
 
-    const csv = convertToCSV(data);
-    downloadCSV('jogos-copa-2026.csv', csv);
-    alert('✅ Jogos exportados com sucesso!');
+    if (typeof converterParaCSV === 'function' && typeof baixarArquivo === 'function') {
+        const csv = converterParaCSV(data);
+        baixarArquivo('jogos-copa-2026.csv', csv, 'text/csv');
+    } else if (typeof convertToCSV === 'function' && typeof downloadCSV === 'function') {
+        const csv = convertToCSV(data);
+        downloadCSV('jogos-copa-2026.csv', csv);
+    } else {
+        alert('Função de exportação CSV não encontrada.');
+    }
 }
 
-// =====================================
-// ATUALIZAR ABA RESULTADOS
-// =====================================
-
 function carregarResultadosTab() {
-    const jogos = loadFromLocalStorage('jogos') || [];
+    const jogos = getLocal('jogos') || [];
     const jogoSelect = document.getElementById('resultado-jogo');
 
-    // Limpar opções anteriores
+    if (!jogoSelect) return;
+
     jogoSelect.innerHTML = '<option value="">-- Selecione um jogo --</option>';
 
-    // Adicionar jogos disponíveis
     jogos.forEach(jogo => {
-        const now = new Date();
-        const gameDate = new Date(`${jogo.data}T${jogo.hora}`);
-        
-        // Mostrar apenas jogos que já começaram ou estão próximos
-        if (gameDate <= now || gameDate.getTime() - now.getTime() < 24 * 60 * 60 * 1000) {
-            const option = document.createElement('option');
-            option.value = jogo.id;
-            option.textContent = `${jogo.time_a} vs ${jogo.time_b} (${jogo.fase}) - ${formatarDataHora(jogo.data, jogo.hora)}`;
-            jogoSelect.appendChild(option);
-        }
+        const option = document.createElement('option');
+        option.value = jogo.id;
+        option.textContent = `${jogo.time_a} vs ${jogo.time_b} (${jogo.fase}) - ${formatarDataHoraJogo(jogo.data, jogo.hora)}`;
+        jogoSelect.appendChild(option);
     });
 
-    jogoSelect.addEventListener('change', function() {
+    jogoSelect.onchange = function() {
         const jogoId = this.value;
         if (!jogoId) return;
 
-        const jogo = jogos.find(j => j.id == jogoId);
+        const jogo = jogos.find(j => Number(j.id) === Number(jogoId));
+
         if (jogo) {
             document.getElementById('resultado-time-a').textContent = jogo.time_a;
             document.getElementById('resultado-time-b').textContent = jogo.time_b;
-            
+
             if (jogo.resultado) {
                 const [placarA, placarB] = jogo.resultado.split('x').map(s => parseInt(s.trim()));
                 document.getElementById('resultado-placar-a').value = placarA;
@@ -300,12 +322,13 @@ function carregarResultadosTab() {
                 document.getElementById('resultado-placar-b').value = '';
             }
         }
-    });
+    };
 
-    // Exibir jogos com resultados
     const jogosComResultado = jogos.filter(j => j.resultado);
     const table = document.getElementById('resultados-table');
-    
+
+    if (!table) return;
+
     if (jogosComResultado.length === 0) {
         table.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum resultado registrado</td></tr>';
         return;
@@ -317,70 +340,54 @@ function carregarResultadosTab() {
             <td><strong>${jogo.resultado}</strong></td>
             <td>${jogo.local}</td>
             <td>
-                <button onclick="deleteGameResult(${jogo.id})" class="btn btn-sm btn-danger">Deletar</button>
+                <button onclick="deleteGameResult(${Number(jogo.id)})" class="btn btn-sm btn-danger">Deletar</button>
             </td>
         </tr>
     `).join('');
 }
 
-// =====================================
-// QUANDO TROCAR DE ABA
-// =====================================
-
-// Interceptar o switch de abas original
-const switchAdminTabOriginal = window.switchAdminTab;
-
 window.switchAdminTab = function(tabName) {
-    // Ocultar todas as abas
     document.querySelectorAll('.admin-tab-content').forEach(content => {
         content.classList.remove('active');
     });
 
-    // Remover classe active de todos os botões
     document.querySelectorAll('.admin-tab').forEach(btn => {
         btn.classList.remove('active');
     });
 
-    // Mostrar aba ativa
     const tabContent = document.getElementById(`${tabName}-tab`);
     if (tabContent) {
         tabContent.classList.add('active');
     }
 
-    // Marcar botão como ativo
     if (event && event.target) {
         event.target.classList.add('active');
     }
 
-    // Carregar dados da aba
     switch(tabName) {
         case 'dashboard':
-            loadAdminDashboard();
+            if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
             break;
         case 'jogos':
             carregarJogosTab();
             break;
         case 'pagamentos':
-            loadPagamentosTab();
+            if (typeof loadPagamentosTab === 'function') loadPagamentosTab();
             break;
         case 'resultados':
             carregarResultadosTab();
             break;
         case 'participantes':
-            loadParticipantesTab();
+            if (typeof loadParticipantesTab === 'function') loadParticipantesTab();
             break;
         case 'palpites':
-            loadPalpitesTab();
+            if (typeof loadPalpitesTab === 'function') loadPalpitesTab();
             break;
         case 'configuracoes':
-            loadConfiguracoes();
+            if (typeof loadConfiguracoes === 'function') loadConfiguracoes();
             break;
     }
 };
-
-// =====================================
-// ESTILOS ADICIONAIS
-// =====================================
 
 const estilosAdicionais = document.createElement('style');
 estilosAdicionais.textContent = `
