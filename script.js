@@ -250,6 +250,7 @@ function baixarArquivo(nome, conteudo, tipo = 'text/plain') {
 
 document.addEventListener('DOMContentLoaded', function() {
     atualizarNavegacao();
+    inicializarSistema();
 });
 
 function atualizarNavegacao() {
@@ -262,4 +263,21 @@ function atualizarNavegacao() {
             link.classList.remove('active');
         }
     });
+}
+
+// =====================================
+// INICIALIZAÇÃO AUTOMÁTICA
+// =====================================
+
+/**
+ * Inicialização automática dos jogos
+ * Verifica se há jogos salvos, se não, carrega os oficiais
+ */
+function inicializarSistema() {
+    const jogosExistentes = obterDados('jogos');
+    
+    if (!jogosExistentes || jogosExistentes.length === 0) {
+        console.log('Nenhum jogo encontrado. Carregando jogos oficiais da Copa 2026...');
+        seedJogosFaseDeGrupos2026();
+    }
 }
