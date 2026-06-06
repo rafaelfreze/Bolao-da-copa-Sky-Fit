@@ -19,13 +19,13 @@ const CONFIGURACAO_PADRAO = {
     pontos_exato: 5
 };
 
+// URL do Google Apps Script
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweCVHO8jem_r17GHTspve61KP7smdlzqs-fimSlYvUTUtbQ2-9-95Vco9CX7mfb1X7IQ/exec';
+
 // =====================================
 // LOCAL STORAGE
 // =====================================
 
-/**
- * Salvar dados no localStorage
- */
 function salvarDados(chave, dados) {
     try {
         localStorage.setItem(chave, JSON.stringify(dados));
@@ -34,9 +34,6 @@ function salvarDados(chave, dados) {
     }
 }
 
-/**
- * Obter dados do localStorage
- */
 function obterDados(chave) {
     try {
         const dados = localStorage.getItem(chave);
@@ -47,9 +44,26 @@ function obterDados(chave) {
     }
 }
 
-/**
- * Obter configuração do bolão
- */
+// =====================================
+// GOOGLE SHEETS
+// =====================================
+
+async function sincronizarJogosGoogleSheets() {
+    try {
+        const resposta = await fetch(`${GOOGLE_SCRIPT_URL}?action=jogos`);
+        const jogos = await resposta.json();
+
+        if (Array.isArray(jogos) && jogos.length > 0) {
+            salvarDados('jogos', jogos);
+            console.log('✅ Jogos sincronizados com Google Sheets:', jogos.length);
+        } else {
+            console.warn('⚠️ Nenhum jogo encontrado na planilha.');
+        }
+    } catch (erro) {
+        console.error('❌ Erro ao sincronizar jogos:', erro);
+    }
+}
+
 function obterConfiguracao() {
     let config = obterDados('config');
     if (!config) {
@@ -59,21 +73,15 @@ function obterConfiguracao() {
     return config;
 }
 
-/**
- * Obter jogo por ID
- */
 function obterJogoPorId(id) {
     const jogos = obterDados('jogos') || [];
-    return jogos.find(j => j.id === id);
+    return jogos.find(j => String(j.id) === String(id));
 }
 
 // =====================================
 // FORMATAÇÃO
 // =====================================
 
-/**
- * Formatar valor em moeda brasileira
- */
 function formatarMoeda(valor) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -81,9 +89,6 @@ function formatarMoeda(valor) {
     }).format(valor);
 }
 
-/**
- * Formatar data
- */
 function formatarData(dataString) {
     const data = new Date(dataString);
     return data.toLocaleDateString('pt-BR', {
@@ -93,9 +98,6 @@ function formatarData(dataString) {
     });
 }
 
-/**
- * Formatar data e hora
- */
 function formatarDataHora(dataString) {
     const data = new Date(dataString);
     return data.toLocaleDateString('pt-BR', {
@@ -110,18 +112,13 @@ function formatarDataHora(dataString) {
 // PONTUAÇÃO
 // =====================================
 
-/**
- * Calcular pontos de um palpite
- */
 function calcularPontos(placarA, placarB, resultadoA, resultadoB) {
     const config = obterConfiguracao();
 
-    // Placar exato
     if (placarA === resultadoA && placarB === resultadoB) {
         return config.pontos_exato;
     }
 
-    // Vencedor
     const palpiteVencedor = placarA > placarB ? 'A' : placarA < placarB ? 'B' : 'EMPATE';
     const resultadoVencedor = resultadoA > resultadoB ? 'A' : resultadoA < resultadoB ? 'B' : 'EMPATE';
 
@@ -135,17 +132,14 @@ function calcularPontos(placarA, placarB, resultadoA, resultadoB) {
     return 0;
 }
 
-/**
- * Recalcular pontos de todos os palpites
- */
 function recalcularPontos() {
     const palpites = obterDados('palpites') || [];
     const jogos = obterDados('jogos') || [];
     const participantes = obterDados('participantes') || [];
 
-    // Atualizar pontos dos palpites
     palpites.forEach(palpite => {
         const jogo = obterJogoPorId(palpite.jogo_id);
+
         if (jogo && jogo.resultado) {
             const [resultadoA, resultadoB] = jogo.resultado.split('x').map(v => parseInt(v.trim()));
             palpite.pontos = calcularPontos(palpite.placar_a, palpite.placar_b, resultadoA, resultadoB);
@@ -156,7 +150,6 @@ function recalcularPontos() {
 
     salvarDados('palpites', palpites);
 
-    // Atualizar pontos dos participantes
     participantes.forEach(participante => {
         const palpitesParticipante = palpites.filter(
             p => p.nome === participante.nome && p.whatsapp === participante.whatsapp
@@ -173,26 +166,17 @@ function recalcularPontos() {
 // VALIDAÇÃO
 // =====================================
 
-/**
- * Validar email
- */
 function validarEmail(email) {
-    if (!email) return true; // Email é opcional
+    if (!email) return true;
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
 }
 
-/**
- * Validar WhatsApp
- */
 function validarWhatsApp(whatsapp) {
     const cleaned = whatsapp.replace(/\D/g, '');
     return cleaned.length >= 10;
 }
 
-/**
- * Formatar WhatsApp
- */
 function formatarWhatsApp(whatsapp) {
     const cleaned = whatsapp.replace(/\D/g, '');
     if (cleaned.length === 11) {
@@ -205,9 +189,6 @@ function formatarWhatsApp(whatsapp) {
 // EXPORTAÇÃO
 // =====================================
 
-/**
- * Converter array para CSV
- */
 function converterParaCSV(dados) {
     if (!dados || dados.length === 0) return '';
 
@@ -228,19 +209,19 @@ function converterParaCSV(dados) {
     return csv.join('\n');
 }
 
-/**
- * Baixar arquivo
- */
 function baixarArquivo(nome, conteudo, tipo = 'text/plain') {
     const blob = new Blob([conteudo], { type: tipo });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
+
     link.href = url;
     link.download = nome;
     link.style.display = 'none';
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
     URL.revokeObjectURL(url);
 }
 
@@ -248,15 +229,21 @@ function baixarArquivo(nome, conteudo, tipo = 'text/plain') {
 // SINCRONIZAÇÃO DE NAVEGAÇÃO
 // =====================================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     atualizarNavegacao();
-    inicializarSistema();
+    await sincronizarJogosGoogleSheets();
+
+    if (typeof inicializarSistema === 'function') {
+        inicializarSistema();
+    }
 });
 
 function atualizarNavegacao() {
     const paginaAtual = window.location.pathname.split('/').pop() || 'index.html';
+
     document.querySelectorAll('.nav-link').forEach(link => {
         const href = link.getAttribute('href');
+
         if (href === paginaAtual || (paginaAtual === '' && href === 'index.html')) {
             link.classList.add('active');
         } else {
