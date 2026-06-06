@@ -554,3 +554,67 @@ function limparTodosDados() {
         }
     }
 }
+
+/**
+ * Salvar resultado do jogo (função melhorada)
+ */
+function saveGameResult() {
+    const jogoId = parseInt(document.getElementById('resultado-jogo').value);
+    const placarA = parseInt(document.getElementById('resultado-placar-a').value);
+    const placarB = parseInt(document.getElementById('resultado-placar-b').value);
+
+    if (!jogoId || isNaN(placarA) || isNaN(placarB)) {
+        alert('Preencha todos os campos!');
+        return;
+    }
+
+    const jogos = loadFromLocalStorage('jogos') || [];
+    const jogo = jogos.find(j => j.id === jogoId);
+
+    if (jogo) {
+        jogo.resultado = `${placarA}x${placarB}`;
+        jogo.ativo = false; // Bloquear apostas após resultado
+        saveToLocalStorage('jogos', jogos);
+        
+        // Recalcular pontos
+        recalculateAllPoints();
+        
+        alert('✅ Resultado salvo com sucesso!');
+        document.getElementById('resultado-form').reset();
+        carregarResultadosTab();
+        loadAdminDashboard();
+    }
+}
+
+/**
+ * Deletar resultado
+ */
+function deleteGameResult(jogoId) {
+    if (confirm('Tem certeza que deseja deletar este resultado?')) {
+        const jogos = loadFromLocalStorage('jogos') || [];
+        const jogo = jogos.find(j => j.id === jogoId);
+        
+        if (jogo) {
+            jogo.resultado = null;
+            jogo.ativo = true; // Reabrir apostas
+            saveToLocalStorage('jogos', jogos);
+            recalculateAllPoints();
+            carregarResultadosTab();
+            loadAdminDashboard();
+            alert('✅ Resultado deletado!');
+        }
+    }
+}
+
+// Setup do form de resultado
+const resultadoForm = document.getElementById('resultado-form');
+if (resultadoForm) {
+    resultadoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveGameResult();
+    });
+}
+
+
+
+
