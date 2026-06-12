@@ -440,6 +440,315 @@ body {
 }
 
 /* ============================================
+   EXPERIÊNCIA DO BOLÃO
+   ============================================ */
+
+.home-summary-section,
+.home-payment-section {
+    padding: 1rem 0;
+}
+
+.section-kicker {
+    color: var(--light-text);
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.section-kicker::before {
+    content: '';
+    display: inline-block;
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-right: 0.55rem;
+    border-radius: 50%;
+    background: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(45, 158, 74, 0.12);
+    vertical-align: middle;
+}
+
+.premium-prize-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #07307d 0%, #0a3c97 100%);
+    border: 2px solid rgba(255, 215, 0, 0.18);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 1rem;
+}
+
+.premium-prize-card .eyebrow {
+    display: block;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+
+.premium-prize-card strong {
+    display: block;
+    color: var(--secondary);
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1;
+}
+
+.premium-prize-card small {
+    display: block;
+    color: rgba(255, 255, 255, 0.72);
+    margin-top: 0.5rem;
+}
+
+.premium-prize-icon {
+    flex: 0 0 auto;
+    font-size: 3.4rem;
+}
+
+.home-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.home-mini-stats div {
+    padding: 1rem;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--dark-card), rgba(37, 45, 61, 0.7));
+    border: 2px solid rgba(255, 215, 0, 0.08);
+}
+
+.home-mini-stats span {
+    display: block;
+    color: var(--muted-text);
+    font-size: 0.76rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+
+.home-mini-stats strong {
+    color: var(--secondary);
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.next-match-panel {
+    padding: 1.5rem;
+}
+
+.next-match-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--muted-text);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.next-match-meta strong {
+    color: var(--primary-light);
+    background: rgba(45, 158, 74, 0.15);
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.next-match-score {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.25rem;
+    border: 2px solid var(--primary-light);
+    border-radius: var(--radius);
+    background: rgba(30, 124, 62, 0.08);
+}
+
+.team-flag {
+    font-size: 3.2rem;
+    line-height: 1;
+}
+
+.team-flag:empty {
+    display: none;
+}
+
+.score-preview {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 0.45rem;
+    align-items: center;
+    justify-content: center;
+    min-width: 150px;
+}
+
+.score-preview span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.7rem;
+    height: 3.7rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid var(--border-color);
+    color: var(--light-text);
+    font-size: 1.7rem;
+    font-weight: 900;
+}
+
+.score-preview em {
+    color: var(--muted-text);
+    font-style: normal;
+    font-weight: 900;
+}
+
+.score-preview small {
+    grid-column: 1 / -1;
+    color: var(--muted-text);
+    text-align: center;
+}
+
+.weekly-games-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--muted-text);
+    font-weight: 800;
+}
+
+.weekly-games-header strong {
+    color: var(--secondary);
+}
+
+.weekly-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.8rem;
+    padding: 1.25rem;
+}
+
+.weekly-game-card {
+    display: grid;
+    gap: 0.75rem;
+    min-height: 142px;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--border-color);
+    color: var(--light-text);
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.weekly-game-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.weekly-game-card.is-brasil {
+    border-color: var(--primary-light);
+    background: rgba(30, 124, 62, 0.16);
+}
+
+.weekly-game-date,
+.weekly-game-meta {
+    color: var(--muted-text);
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.weekly-game-teams {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.55rem;
+    align-items: center;
+    font-weight: 900;
+}
+
+.weekly-game-teams span:last-child {
+    text-align: right;
+}
+
+.weekly-game-teams strong {
+    color: var(--secondary);
+}
+
+.home-pix-card {
+    padding: 1.4rem;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--dark-card), rgba(37, 45, 61, 0.78));
+    border: 2px solid rgba(255, 215, 0, 0.12);
+    box-shadow: var(--shadow);
+}
+
+.home-pix-content {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1.2rem;
+    align-items: center;
+}
+
+.pix-qr-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    overflow: hidden;
+    color: #07307d;
+    font-weight: 900;
+}
+
+.pix-qr-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pix-qr-placeholder {
+    background:
+        linear-gradient(90deg, rgba(7, 48, 125, 0.1) 50%, transparent 50%),
+        linear-gradient(rgba(7, 48, 125, 0.1) 50%, transparent 50%),
+        #fff;
+    background-size: 22px 22px;
+}
+
+.pix-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.pix-summary strong {
+    color: var(--light-text);
+    font-size: 1.1rem;
+}
+
+.pix-summary span {
+    color: var(--muted-text);
+}
+
+.ranking-alert {
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius);
+    background: rgba(255, 193, 7, 0.12);
+    color: #ffd36a;
+    border: 2px solid rgba(255, 193, 7, 0.28);
+    margin: 1rem 0 1.5rem;
+}
+
+/* ============================================
    BOTÕES
    ============================================ */
 
@@ -846,6 +1155,30 @@ legend {
 
 .col-pos { width: 70px; }
 
+.col-nome strong {
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.ranking-bets {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: var(--muted-text);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.ranking-bets span {
+    display: block;
+}
+
+.ranking-bets.muted {
+    opacity: 0.75;
+}
+
 .pos-badge {
     display: inline-flex;
     align-items: center;
@@ -1095,6 +1428,142 @@ legend {
     border-top: 1px solid var(--border-color);
     text-align: center;
     font-size: 0.8rem;
+    color: var(--muted-text);
+}
+
+.group-help {
+    color: var(--muted-text);
+    margin: -0.4rem 0 1rem;
+}
+
+.group-filter-section {
+    justify-content: flex-start;
+}
+
+.brazil-path-card {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--dark-card), rgba(37, 45, 61, 0.74));
+    border: 2px solid rgba(255, 215, 0, 0.1);
+    border-left: 6px solid var(--primary-light);
+    box-shadow: var(--shadow);
+}
+
+.brazil-path-card h2 {
+    color: var(--secondary);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.brazil-path-card p {
+    color: var(--light-text);
+    margin: 0.7rem 0;
+    font-size: 1rem;
+}
+
+.brazil-path-card p strong {
+    color: var(--primary-light);
+    margin-right: 0.35rem;
+}
+
+.brazil-path-card p span {
+    color: var(--muted-text);
+    display: block;
+    margin-left: 0;
+}
+
+.group-standings-card {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+}
+
+.group-title {
+    display: inline-block;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: #07307d;
+    color: white;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.team-standings-list,
+.group-games-list {
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    background: linear-gradient(135deg, var(--dark-card), rgba(37, 45, 61, 0.76));
+    box-shadow: var(--shadow);
+}
+
+.team-standings-list {
+    border-radius: 0 var(--radius) var(--radius) var(--radius);
+}
+
+.group-games-list {
+    margin-top: 0.8rem;
+    border-radius: var(--radius);
+}
+
+.team-standing-row,
+.group-game-row {
+    display: grid;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1.15rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.team-standing-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.team-standing-row:last-child,
+.group-game-row:last-child {
+    border-bottom: 0;
+}
+
+.team-standing-name {
+    color: var(--light-text);
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.team-standing-status {
+    color: var(--muted-text);
+    white-space: nowrap;
+}
+
+.team-highlight {
+    background: rgba(45, 158, 74, 0.16);
+    box-shadow: inset 4px 0 0 var(--primary-light);
+}
+
+.team-highlight .team-standing-name,
+.team-highlight .team-standing-status {
+    color: #67e08d;
+}
+
+.group-game-row {
+    grid-template-columns: auto minmax(120px, 1fr) auto minmax(120px, 1fr) minmax(160px, 1.4fr);
+    color: var(--light-text);
+}
+
+.group-game-row strong {
+    color: var(--primary-light);
+}
+
+.group-game-row em {
+    color: var(--secondary);
+    font-style: normal;
+    font-weight: 900;
+    text-align: center;
+}
+
+.group-game-row small {
     color: var(--muted-text);
 }
 
@@ -1375,6 +1844,29 @@ legend {
     box-shadow: var(--shadow-lg);
 }
 
+.pagamentos-grupo {
+    display: grid;
+    gap: 1rem;
+}
+
+.pagamentos-grupo + .pagamentos-grupo {
+    margin-top: 2rem;
+}
+
+.pagamentos-grupo h3 {
+    color: var(--secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.65rem;
+}
+
+.jogo-item.pagamento-pendente {
+    border-color: rgba(255, 193, 7, 0.55);
+}
+
+.jogo-item.pagamento-pago {
+    border-color: rgba(40, 167, 69, 0.4);
+}
+
 .jogo-info {
     flex: 1;
     min-width: 200px;
@@ -1578,6 +2070,40 @@ legend {
 
     .jogo-actions .btn {
         flex: 1;
+    }
+
+    .home-mini-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .next-match-score {
+        grid-template-columns: 1fr;
+    }
+
+    .home-pix-content {
+        grid-template-columns: 110px 1fr;
+    }
+
+    .group-filter-section {
+        justify-content: center;
+    }
+
+    .group-game-row {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+
+    .group-game-row em {
+        text-align: left;
+    }
+
+    .team-standing-row {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+
+    .team-standing-status {
+        white-space: normal;
     }
 }
 
@@ -1796,6 +2322,54 @@ legend {
 
     .score-input {
         padding: 0.75rem !important;
+    }
+
+    .premium-prize-card {
+        padding: 1.15rem;
+    }
+
+    .premium-prize-icon {
+        font-size: 2.4rem;
+    }
+
+    .home-mini-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .next-match-meta {
+        flex-direction: column;
+    }
+
+    .team-flag {
+        font-size: 2.6rem;
+    }
+
+    .score-preview {
+        min-width: 0;
+    }
+
+    .score-preview span {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.35rem;
+    }
+
+    .home-pix-content {
+        grid-template-columns: 1fr;
+    }
+
+    .pix-qr-box {
+        width: min(180px, 100%);
+        margin: 0 auto;
+    }
+
+    .brazil-path-card,
+    .home-pix-card {
+        padding: 1.15rem;
+    }
+
+    .group-title {
+        font-size: 0.8rem;
     }
 }
 

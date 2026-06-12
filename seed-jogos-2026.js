@@ -1195,13 +1195,20 @@ function seedJogos2026Completo() {
 /**
  * Restaurar com confirmação
  */
-function restaurarJogos2026Completo() {
+async function restaurarJogos2026Completo() {
     if (!confirm('Tem certeza que deseja restaurar os 92 jogos oficiais da Copa 2026?\n\nTodos os jogos editados serão substituídos.')) {
         return;
     }
 
     try {
         const jogos = seedJogos2026Completo();
+        let enviados = 0;
+
+        if (typeof enviarDadosGoogleSheets === 'function') {
+            const enviado = await enviarDadosGoogleSheets('adicionar_jogos_lote', { jogos });
+            enviados = enviado ? jogos.length : 0;
+        }
+
         alert(`✅ Sucesso!\n\n92 jogos oficiais foram carregados:\n\n` +
             `• 72 jogos da Fase de Grupos (12 grupos)\n` +
             `• 16 jogos das Oitavas\n` +
@@ -1209,7 +1216,8 @@ function restaurarJogos2026Completo() {
             `• 2 jogos das Semifinais\n` +
             `• 1 jogo do Terceiro Lugar\n` +
             `• 1 jogo da Final\n\n` +
-            `Total: 92 jogos da Copa 2026`);
+            `Total: 92 jogos da Copa 2026\n` +
+            `Enviados para a planilha: ${enviados}`);
         
         // Atualizar lista se estiver na aba
         if (document.getElementById('lista-jogos')) {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -29,16 +29,12 @@
         <div class="container">
             <h1 class="page-title">Tabela de Jogos</h1>
 
-            <!-- Filtros -->
-            <div class="filter-section">
-                <button class="filter-btn active" data-filter="todos">Todos</button>
-                <button class="filter-btn" data-filter="Fase de Grupos">Fase de Grupos</button>
-                <button class="filter-btn" data-filter="Oitavas">Oitavas</button>
-                <button class="filter-btn" data-filter="Quartas">Quartas</button>
-                <button class="filter-btn" data-filter="Semifinal">Semifinal</button>
-                <button class="filter-btn" data-filter="Terceiro Lugar">Terceiro Lugar</button>
-                <button class="filter-btn" data-filter="Final">Final</button>
-            </div>
+            <div id="caminho-brasil"></div>
+
+            <div class="section-kicker">Classificação por grupo</div>
+            <p class="group-help">Clique em um grupo para filtrar. O Brasil fica destacado automaticamente quando aparecer na tabela.</p>
+
+            <div class="filter-section group-filter-section" id="filtros-grupos"></div>
 
             <!-- Jogos -->
             <div id="jogos-container" class="jogos-container">
@@ -54,19 +50,33 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="seed-jogos-2026.js?v=20260612-ranking11"></script>
+    <script src="script.js?v=20260612-ranking11"></script>
     <script>
         let filtroAtual = 'todos';
+        const GRUPOS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
-        document.addEventListener('DOMContentLoaded', function() {
-            carregarTabela();
+        document.addEventListener('DOMContentLoaded', async function() {
             setupFiltrosTabela();
+            const onlineOk = await carregarDadosOnlineObrigatorios();
+            carregarTabela();
+            if (!onlineOk) {
+                document.getElementById('jogos-container').innerHTML = '<p class="text-center text-muted">Nao consegui ler a planilha online agora. Atualize a pagina ou confira a implantacao do Apps Script.</p>';
+            }
+            corrigirTextosVisiveisDaPagina();
         });
 
         function setupFiltrosTabela() {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
+            const filtros = document.getElementById('filtros-grupos');
+            filtros.innerHTML = `
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                ${GRUPOS.map(grupo => `<button class="filter-btn" data-filter="${grupo}">Grupo ${grupo}</button>`).join('')}
+                <button class="filter-btn" data-filter="eliminatorias">Eliminatórias</button>
+            `;
+
+            filtros.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    filtros.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     filtroAtual = this.dataset.filter;
                     carregarTabela();
@@ -77,78 +87,210 @@
         function carregarTabela() {
             const jogos = obterDados('jogos') || [];
             const container = document.getElementById('jogos-container');
+            renderizarCaminhoBrasil(jogos);
 
-            // Filtrar jogos
-            let jogosFiltrando = jogos;
-            if (filtroAtual !== 'todos') {
-                jogosFiltrando = jogos.filter(j => j.fase === filtroAtual);
+            const jogosGrupos = jogos.filter(j => j.grupo);
+            const eliminatorias = jogos.filter(j => !j.grupo);
+            const gruposParaRenderizar = filtroAtual === 'todos'
+                ? GRUPOS.filter(grupo => jogosGrupos.some(j => j.grupo === grupo))
+                : GRUPOS.includes(filtroAtual) ? [filtroAtual] : [];
+
+            let html = '';
+
+            gruposParaRenderizar.forEach(grupo => {
+                const jogosDoGrupo = jogosGrupos.filter(j => j.grupo === grupo);
+                if (jogosDoGrupo.length > 0) {
+                    html += renderizarGrupo(grupo, jogosDoGrupo);
+                }
+            });
+
+            if (filtroAtual === 'todos' || filtroAtual === 'eliminatorias') {
+                html += renderizarEliminatorias(eliminatorias);
             }
 
-            if (jogosFiltrando.length === 0) {
+            if (!html) {
                 container.innerHTML = '<p class="text-center text-muted">Nenhum jogo encontrado nesta fase.</p>';
                 return;
             }
 
-            // Agrupar por fase
-            const agrupado = {};
-            jogosFiltrando.forEach(jogo => {
-                if (!agrupado[jogo.fase]) {
-                    agrupado[jogo.fase] = [];
-                }
-                agrupado[jogo.fase].push(jogo);
-            });
-
-            // Renderizar
-            let html = '';
-            Object.entries(agrupado).forEach(([fase, jogos]) => {
-                html += `
-                    <div class="phase-section">
-                        <h2 class="phase-title">${fase}</h2>
-                        <div class="games-grid">
-                            ${jogos.map(jogo => renderizarCartaoJogo(jogo)).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-
             container.innerHTML = html;
         }
 
+        function renderizarGrupo(grupo, jogosDoGrupo) {
+            const classificacao = calcularClassificacaoGrupo(jogosDoGrupo);
+
+            return `
+                <section class="group-standings-card" id="grupo-${grupo}">
+                    <div class="group-title">Grupo ${grupo}</div>
+                    <div class="team-standings-list">
+                        ${classificacao.map(time => renderizarLinhaClassificacao(time)).join('')}
+                    </div>
+                    <div class="group-games-list">
+                        ${jogosDoGrupo.map(jogo => renderizarLinhaJogoGrupo(jogo)).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function calcularClassificacaoGrupo(jogosDoGrupo) {
+            const times = {};
+
+            jogosDoGrupo.forEach(jogo => {
+                [jogo.time_a, jogo.time_b].forEach(nome => {
+                    if (!times[nome]) {
+                        times[nome] = {
+                            nome,
+                            pontos: 0,
+                            jogos: 0,
+                            vitorias: 0,
+                            empates: 0,
+                            derrotas: 0,
+                            golsPro: 0,
+                            golsContra: 0
+                        };
+                    }
+                });
+
+                const resultado = extrairResultado(jogo.resultado);
+                if (!resultado) return;
+
+                const casa = times[jogo.time_a];
+                const fora = times[jogo.time_b];
+                casa.jogos += 1;
+                fora.jogos += 1;
+                casa.golsPro += resultado.a;
+                casa.golsContra += resultado.b;
+                fora.golsPro += resultado.b;
+                fora.golsContra += resultado.a;
+
+                if (resultado.a > resultado.b) {
+                    casa.pontos += 3;
+                    casa.vitorias += 1;
+                    fora.derrotas += 1;
+                } else if (resultado.a < resultado.b) {
+                    fora.pontos += 3;
+                    fora.vitorias += 1;
+                    casa.derrotas += 1;
+                } else {
+                    casa.pontos += 1;
+                    fora.pontos += 1;
+                    casa.empates += 1;
+                    fora.empates += 1;
+                }
+            });
+
+            return Object.values(times).sort((a, b) => {
+                const saldoA = a.golsPro - a.golsContra;
+                const saldoB = b.golsPro - b.golsContra;
+                return b.pontos - a.pontos || saldoB - saldoA || b.golsPro - a.golsPro || a.nome.localeCompare(b.nome);
+            });
+        }
+
+        function extrairResultado(resultado) {
+            if (!resultado) return null;
+            const partes = String(resultado).toLowerCase().split('x').map(v => parseInt(v.trim(), 10));
+            if (partes.length !== 2 || partes.some(Number.isNaN)) return null;
+            return { a: partes[0], b: partes[1] };
+        }
+
+        function renderizarLinhaClassificacao(time) {
+            const destaque = time.nome.toLowerCase().includes('brasil') ? 'team-highlight' : '';
+            const status = time.jogos > 0
+                ? `${time.pontos} pts · ${time.vitorias}V ${time.empates}E ${time.derrotas}D`
+                : 'Aguardando jogos';
+
+            return `
+                <div class="team-standing-row ${destaque}">
+                    <span class="team-standing-name">${obterBandeiraTime(time.nome)} ${time.nome}</span>
+                    <span class="team-standing-status">${status}</span>
+                </div>
+            `;
+        }
+
+        function renderizarLinhaJogoGrupo(jogo) {
+            const resultado = jogo.resultado || '×';
+
+            return `
+                <div class="group-game-row">
+                    <strong>${formatarDataCurtaJogo(jogo)}</strong>
+                    <span>${obterBandeiraTime(jogo.time_a)} ${jogo.time_a}</span>
+                    <em>${resultado}</em>
+                    <span>${jogo.time_b} ${obterBandeiraTime(jogo.time_b)}</span>
+                    <small>${jogo.local}</small>
+                </div>
+            `;
+        }
+
+        function renderizarEliminatorias(jogos) {
+            if (jogos.length === 0) return '';
+
+            const agrupado = {};
+            jogos.forEach(jogo => {
+                if (!agrupado[jogo.fase]) agrupado[jogo.fase] = [];
+                agrupado[jogo.fase].push(jogo);
+            });
+
+            return Object.entries(agrupado).map(([fase, jogosFase]) => `
+                <section class="phase-section">
+                    <h2 class="phase-title">${fase}</h2>
+                    <div class="games-grid">
+                        ${jogosFase.map(jogo => renderizarCartaoJogo(jogo)).join('')}
+                    </div>
+                </section>
+            `).join('');
+        }
+
+        function renderizarCaminhoBrasil(jogos) {
+            const container = document.getElementById('caminho-brasil');
+            const jogosBrasil = jogos
+                .filter(j => j.time_a === 'Brasil' || j.time_b === 'Brasil')
+                .filter(j => j.grupo)
+                .sort((a, b) => new Date(`${a.data}T${a.hora || '00:00'}`) - new Date(`${b.data}T${b.hora || '00:00'}`));
+
+            if (jogosBrasil.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const grupoBrasil = jogosBrasil[0].grupo;
+            container.innerHTML = `
+                <section class="brazil-path-card">
+                    <h2>${obterBandeiraTime('Brasil')} Caminho do Brasil - Grupo ${grupoBrasil}</h2>
+                    ${jogosBrasil.map(jogo => `
+                        <p>
+                            <strong>${formatarDataCurtaJogo(jogo)}</strong>
+                            ${obterBandeiraTime(jogo.time_a)} ${jogo.time_a} × ${jogo.time_b} ${obterBandeiraTime(jogo.time_b)}
+                            <span>${jogo.local}</span>
+                        </p>
+                    `).join('')}
+                </section>
+            `;
+        }
+
         function renderizarCartaoJogo(jogo) {
-            const dataJogo = new Date(jogo.data + 'T' + jogo.hora);
+            const dataJogo = new Date(`${jogo.data}T${jogo.hora || '00:00'}`);
             const agora = new Date();
-            const jaFezou = dataJogo <= agora;
-
-            const dataFormatada = dataJogo.toLocaleDateString('pt-BR', {
-                weekday: 'short',
-                month: '2-digit',
-                day: '2-digit'
-            });
-
-            const horaFormatada = dataJogo.toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            const jaComecou = dataJogo <= agora;
 
             let placarHtml = '';
             if (jogo.resultado) {
                 placarHtml = `<div class="jogo-placar-final">${jogo.resultado}</div>`;
-            } else if (jaFezou) {
+            } else if (jaComecou) {
                 placarHtml = `<div class="jogo-ao-vivo">AO VIVO</div>`;
             } else {
                 placarHtml = `<div class="jogo-vs">vs</div>`;
             }
 
             return `
-                <div class="jogo-card ${jogo.resultado ? 'finalizado' : jaFezou ? 'ao-vivo' : 'proximo'}">
+                <div class="jogo-card ${jogo.resultado ? 'finalizado' : jaComecou ? 'ao-vivo' : 'proximo'}">
                     <div class="jogo-header">
-                        <span class="jogo-data">${dataFormatada}</span>
-                        <span class="jogo-hora">${horaFormatada}</span>
+                        <span class="jogo-data">${formatarDataCurtaJogo(jogo)}</span>
+                        <span class="jogo-hora">${jogo.hora || ''}</span>
                     </div>
                     <div class="jogo-body">
-                        <div class="jogo-time-a">${jogo.time_a}</div>
+                        <div class="jogo-time-a">${obterBandeiraTime(jogo.time_a)} ${jogo.time_a}</div>
                         ${placarHtml}
-                        <div class="jogo-time-b">${jogo.time_b}</div>
+                        <div class="jogo-time-b">${jogo.time_b} ${obterBandeiraTime(jogo.time_b)}</div>
                     </div>
                     <div class="jogo-footer">
                         <small>📍 ${jogo.local}</small>

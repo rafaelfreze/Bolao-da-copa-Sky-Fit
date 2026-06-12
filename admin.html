@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Bolão Online</title>
     <link rel="stylesheet" href="style.css">
-    <script src="seed-jogos-2026.js"></script>
+    <script src="seed-jogos-2026.js?v=20260612-ranking11"></script>
 </head>
 <body>
     <!-- Navegação Admin -->
@@ -108,6 +108,24 @@
                                     <option value="Semifinal">Semifinal</option>
                                     <option value="Terceiro Lugar">Terceiro Lugar</option>
                                     <option value="Final">Final</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Grupo</label>
+                                <select id="form-grupo">
+                                    <option value="">-- Sem grupo --</option>
+                                    <option value="A">Grupo A</option>
+                                    <option value="B">Grupo B</option>
+                                    <option value="C">Grupo C</option>
+                                    <option value="D">Grupo D</option>
+                                    <option value="E">Grupo E</option>
+                                    <option value="F">Grupo F</option>
+                                    <option value="G">Grupo G</option>
+                                    <option value="H">Grupo H</option>
+                                    <option value="I">Grupo I</option>
+                                    <option value="J">Grupo J</option>
+                                    <option value="K">Grupo K</option>
+                                    <option value="L">Grupo L</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -232,13 +250,28 @@
                         </div>
 
                         <div class="form-group">
+                            <label>Código PIX Copia e Cola</label>
+                            <textarea id="config-codigo-pix" placeholder="Cole aqui o código PIX completo, se tiver"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>URL da Imagem do QR Code PIX</label>
+                            <input type="url" id="config-qr-pix" placeholder="Ex: https://.../qrcode.png">
+                        </div>
+
+                        <div class="form-group">
                             <label>Recebedor PIX</label>
                             <input type="text" id="config-recebedor" placeholder="Ex: Seu Nome">
                         </div>
 
                         <div class="form-group">
+                            <label>Cidade do Recebedor</label>
+                            <input type="text" id="config-cidade-pix" placeholder="Ex: Campo Grande / MS">
+                        </div>
+
+                        <div class="form-group">
                             <label>Texto do Prêmio</label>
-                            <textarea id="config-premio" placeholder="Ex: Prêmio para o campeão!"></textarea>
+                            <textarea id="config-premio" placeholder="Ex: Para quem fizer mais pontos no final"></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-lg btn-block">💾 SALVAR CONFIGURAÇÕES</button>
@@ -268,17 +301,10 @@
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card">
-    <h3>Gerenciar Base de Dados de Jogos</h3>
-    <button onclick="restaurarJogos2026Completo()" class="btn btn-primary btn-block">🔄 Restaurar Todos os 92 Jogos da Copa 2026</button>
-    <p class="help-text">Carrega 92 jogos: 72 da Fase de Grupos + 20 das Eliminatórias (Oitavas, Quartas, Semifinal, 3º Lugar e Final)</p>
-    
-    <button onclick="apagarTodosOsJogos()" class="btn btn-danger btn-block" style="margin-top: 1rem;">🗑️ Deletar Todos os Jogos</button>
-    <p class="help-text">⚠️ Remove todos os jogos e palpites. Ação irreversível!</p>
-</div>
-                    <button onclick="restaurarJogosOficias2026()" class="btn btn-primary btn-block">🔄 Restaurar Jogos Oficiais - Fase de Grupos 2026</button>
-                    <p class="help-text">Carrega os 72 jogos oficiais da fase de grupos (12 grupos com 6 jogos cada)</p>
-                    
+                    <h3>Gerenciar Base de Dados de Jogos</h3>
+                    <button onclick="restaurarJogos2026Completo()" class="btn btn-primary btn-block">🔄 Restaurar Todos os Jogos da Copa 2026</button>
+                    <p class="help-text">Carrega a tabela base com jogos separados por grupo e eliminatórias.</p>
+
                     <button onclick="apagarTodosOsJogos()" class="btn btn-danger btn-block" style="margin-top: 1rem;">🗑️ Deletar Todos os Jogos</button>
                     <p class="help-text">⚠️ Remove todos os jogos e palpites. Ação irreversível!</p>
                 </div>
@@ -298,7 +324,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
-    <script src="admin.js"></script>
+    <script src="script.js?v=20260612-ranking11"></script>
+    <script src="admin.js?v=20260612-ranking11"></script>
 </body>
 </html>

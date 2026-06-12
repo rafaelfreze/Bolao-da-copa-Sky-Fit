@@ -59,10 +59,14 @@ function mostrarLogin() {
     document.getElementById('senha-input').focus();
 }
 
-function mostrarAdmin() {
+async function mostrarAdmin() {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-main').style.display = 'block';
     carregarDashboard();
+    sincronizarDadosGoogleSheets({ force: true }).then(() => {
+        carregarDashboard();
+        corrigirTextosVisiveisDaPagina();
+    });
 }
 
 // =====================================
@@ -114,10 +118,10 @@ function carregarDashboard() {
     const palpites = obterDados('palpites') || [];
     const jogos = obterDados('jogos') || [];
 
-    const config = obterConfiguracao();
-    const pagos = participantes.filter(p => p.pago).length;
+    const resumo = obterResumoFinanceiro();
+    const pagos = resumo.pagos;
     const pendentes = participantes.filter(p => p.pendente_pagamento).length;
-    const premio = pagos * config.valor_palpite;
+    const premio = resumo.premio;
     const resultados = jogos.filter(j => j.resultado).length;
 
     document.getElementById('dash-participantes').textContent = participantes.length;
@@ -134,26 +138,7 @@ function carregarDashboard() {
 // =====================================
 
 async function enviarJogoParaPlanilha(jogo) {
-    if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
-        console.error('GOOGLE_SCRIPT_URL não encontrada no script.js');
-        return false;
-    }
-
-    try {
-        await fetch(`${GOOGLE_SCRIPT_URL}?action=adicionar_jogo`, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
-            body: JSON.stringify(jogo)
-        });
-
-        return true;
-    } catch (erro) {
-        console.error('Erro ao enviar jogo para Google Sheets:', erro);
-        return false;
-    }
+    return enviarDadosGoogleSheets('adicionar_jogo', jogo);
 }
 
 // =====================================
@@ -184,7 +169,8 @@ function carregarListaJogos() {
             <div class="jogo-item">
                 <div class="jogo-info">
                     <strong>${jogo.time_a} vs ${jogo.time_b}</strong><br>
-                    <small>📅 ${formatarData(jogo.data)} ${jogo.hora}</small><br>
+                    <small>🏷️ ${jogo.grupo ? `Grupo ${jogo.grupo}` : jogo.fase}</small><br>
+                    <small>📅 ${formatarDataHoraJogo(jogo)}</small><br>
                     <small>📍 ${jogo.local}</small><br>
                     <small>
                         ${jogo.resultado ? `<strong>Resultado: ${jogo.resultado}</strong>` : ''}
@@ -206,6 +192,7 @@ async function salvarJogo(event) {
     event.preventDefault();
 
     const fase = document.getElementById('form-fase').value;
+    const grupo = document.getElementById('form-grupo').value;
     const time_a = document.getElementById('form-time-a').value.trim();
     const time_b = document.getElementById('form-time-b').value.trim();
     const data = document.getElementById('form-data').value;
@@ -227,6 +214,7 @@ async function salvarJogo(event) {
             jogos[index] = {
                 ...jogos[index],
                 fase,
+                grupo: fase === 'Fase de Grupos' ? grupo : '',
                 time_a,
                 time_b,
                 data,
@@ -237,7 +225,12 @@ async function salvarJogo(event) {
 
             salvarDados('jogos', jogos);
 
-            alert('✅ Jogo atualizado no navegador.\n\nPara atualizar na planilha, edite a linha diretamente no Google Sheets.');
+            const enviado = await enviarDadosGoogleSheets('atualizar_jogo', jogos[index]);
+            if (enviado) {
+                alert('✅ Jogo atualizado no navegador e enviado para a planilha!');
+            } else {
+                alert('⚠️ Jogo atualizado no navegador, mas não consegui enviar para a planilha.');
+            }
         }
     } else {
         const novoId = jogos.length > 0 ? Math.max(...jogos.map(j => Number(j.id) || 0)) + 1 : 1;
@@ -245,6 +238,7 @@ async function salvarJogo(event) {
         const novoJogo = {
             id: novoId,
             fase,
+            grupo: fase === 'Fase de Grupos' ? grupo : '',
             time_a,
             time_b,
             data,
@@ -281,6 +275,7 @@ function editarJogo(jogoId) {
     }
 
     document.getElementById('form-fase').value = jogo.fase;
+    document.getElementById('form-grupo').value = jogo.grupo || '';
     document.getElementById('form-time-a').value = jogo.time_a;
     document.getElementById('form-time-b').value = jogo.time_b;
     document.getElementById('form-data').value = jogo.data;
@@ -325,20 +320,18 @@ function deletarJogo(jogoId) {
 
 function carregarSelectResultados() {
     const jogos = obterDados('jogos') || [];
-    const agora = new Date();
     const select = document.getElementById('form-resultado-jogo');
 
     select.innerHTML = '<option value="">-- Selecione um jogo --</option>';
 
-    const jogosDisponiveis = jogos.filter(j => {
-        const dataJogo = new Date(j.data + 'T' + j.hora);
-        return dataJogo <= agora;
-    });
+    const jogosDisponiveis = jogos
+        .filter(j => j.time_a && j.time_b)
+        .sort((a, b) => (obterDataHoraJogo(a) || 0) - (obterDataHoraJogo(b) || 0));
 
     jogosDisponiveis.forEach(jogo => {
         const option = document.createElement('option');
         option.value = jogo.id;
-        const dataFormatada = formatarDataHora(jogo.data + 'T' + jogo.hora);
+        const dataFormatada = formatarDataHoraJogo(jogo);
         option.textContent = `${jogo.time_a} vs ${jogo.time_b} - ${dataFormatada}`;
         select.appendChild(option);
     });
@@ -366,7 +359,7 @@ function carregarSelectResultados() {
     carregarListaResultados();
 }
 
-function salvarResultado(event) {
+async function salvarResultado(event) {
     event.preventDefault();
 
     const jogoId = parseInt(document.getElementById('form-resultado-jogo').value);
@@ -388,7 +381,23 @@ function salvarResultado(event) {
 
         recalcularPontos();
 
-        alert('✅ Resultado lançado no navegador.\n\nPara atualizar na planilha, edite o resultado na aba Jogos.');
+        const resultadoEnviado = await enviarDadosGoogleSheets('adicionar_resultado', {
+            id: Date.now(),
+            jogo_id: jogo.id,
+            time_a: jogo.time_a,
+            time_b: jogo.time_b,
+            resultado: jogo.resultado,
+            data: jogo.data,
+            hora: jogo.hora,
+            fase: jogo.fase
+        });
+
+        if (resultadoEnviado) {
+            alert('✅ Resultado lançado e enviado para a planilha!');
+        } else {
+            alert('⚠️ Resultado lançado no navegador, mas não consegui confirmar o envio para a planilha.');
+        }
+
         document.getElementById('form-resultado').reset();
         carregarSelectResultados();
         carregarDashboard();
@@ -419,7 +428,7 @@ function carregarListaResultados() {
     `).join('');
 }
 
-function deletarResultado(jogoId) {
+async function deletarResultado(jogoId) {
     if (!confirm('Tem certeza que deseja deletar este resultado?')) {
         return;
     }
@@ -434,7 +443,9 @@ function deletarResultado(jogoId) {
 
         recalcularPontos();
 
-        alert('✅ Resultado deletado do navegador.');
+        await enviarDadosGoogleSheets('atualizar_jogo', jogo);
+
+        alert('✅ Resultado deletado do navegador e atualização enviada para a planilha.');
         carregarSelectResultados();
         carregarDashboard();
     }
@@ -453,44 +464,60 @@ function carregarListaPagamentos() {
         return;
     }
 
-    const html = participantes.map((p, index) => `
-        <div class="jogo-item">
+    const comIndice = participantes.map((participante, index) => ({ participante, index }));
+    const pendentes = comIndice.filter(item => !item.participante.pago || item.participante.pendente_pagamento);
+    const pagos = comIndice.filter(item => item.participante.pago && !item.participante.pendente_pagamento);
+
+    const renderizarItem = ({ participante: p, index }) => {
+        const pendente = !p.pago || p.pendente_pagamento;
+        const status = p.pendente_pagamento ? '🔔 Aguardando confirmação' : p.pago ? '✅ Pago' : '⏳ Pendente';
+
+        return `
+        <div class="jogo-item ${pendente ? 'pagamento-pendente' : 'pagamento-pago'}">
             <div class="jogo-info">
                 <strong>${p.nome}</strong><br>
                 <small>${p.whatsapp}</small><br>
-                <small>${p.email ? p.email : '-'}</small><br>
-                <small>
-                    ${p.pago ? '✅ Pago' : '⏳ Pendente'}
-                    ${p.pendente_pagamento ? '| 🔔 Aguardando confirmação' : ''}
-                </small>
+                <small>${status}</small>
             </div>
             <div class="jogo-actions">
                 <button class="btn btn-success btn-small" onclick="confirmarPagamento(${index})">✅ Pago</button>
                 <button class="btn btn-warning btn-small" onclick="marcarPendente(${index})">⏳ Pendente</button>
             </div>
         </div>
-    `).join('');
+    `;
+    };
 
-    container.innerHTML = html;
+    container.innerHTML = `
+        <div class="pagamentos-grupo">
+            <h3>Pendentes</h3>
+            ${pendentes.length ? pendentes.map(renderizarItem).join('') : '<p class="text-center text-muted">Nenhum pagamento pendente.</p>'}
+        </div>
+        <div class="pagamentos-grupo">
+            <h3>Pagos</h3>
+            ${pagos.length ? pagos.map(renderizarItem).join('') : '<p class="text-center text-muted">Nenhum pagamento confirmado.</p>'}
+        </div>
+    `;
 }
 
-function confirmarPagamento(index) {
+async function confirmarPagamento(index) {
     const participantes = obterDados('participantes') || [];
     participantes[index].pago = true;
     participantes[index].pendente_pagamento = false;
     participantes[index].data_pagamento = new Date().toISOString();
     salvarDados('participantes', participantes);
+    await enviarDadosGoogleSheets('atualizar_participante', participantes[index]);
 
     alert(`✅ Pagamento de ${participantes[index].nome} confirmado!`);
     carregarListaPagamentos();
     carregarDashboard();
 }
 
-function marcarPendente(index) {
+async function marcarPendente(index) {
     const participantes = obterDados('participantes') || [];
     participantes[index].pago = false;
     participantes[index].pendente_pagamento = false;
     salvarDados('participantes', participantes);
+    await enviarDadosGoogleSheets('atualizar_participante', participantes[index]);
 
     alert(`⏳ ${participantes[index].nome} marcado como pendente!`);
     carregarListaPagamentos();
@@ -507,7 +534,10 @@ function carregarConfiguracoesForm() {
     document.getElementById('config-nome').value = config.nome_bolao;
     document.getElementById('config-valor').value = config.valor_palpite;
     document.getElementById('config-pix').value = config.chave_pix;
+    document.getElementById('config-codigo-pix').value = config.codigo_pix || '';
+    document.getElementById('config-qr-pix').value = config.pix_qr_url || '';
     document.getElementById('config-recebedor').value = config.recebedor_pix;
+    document.getElementById('config-cidade-pix').value = config.cidade_pix || '';
     document.getElementById('config-premio').value = config.texto_premio || '';
 
     document.getElementById('pontos-resultado').value = config.pontos_resultado;
@@ -515,7 +545,7 @@ function carregarConfiguracoesForm() {
     document.getElementById('pontos-exato').value = config.pontos_exato;
 }
 
-function salvarConfiguracao(event) {
+async function salvarConfiguracao(event) {
     event.preventDefault();
 
     let config = obterConfiguracao();
@@ -523,14 +553,18 @@ function salvarConfiguracao(event) {
     config.nome_bolao = document.getElementById('config-nome').value;
     config.valor_palpite = parseFloat(document.getElementById('config-valor').value) || 10;
     config.chave_pix = document.getElementById('config-pix').value;
+    config.codigo_pix = document.getElementById('config-codigo-pix').value;
+    config.pix_qr_url = document.getElementById('config-qr-pix').value;
     config.recebedor_pix = document.getElementById('config-recebedor').value;
+    config.cidade_pix = document.getElementById('config-cidade-pix').value;
     config.texto_premio = document.getElementById('config-premio').value;
 
     salvarDados('config', config);
+    await enviarDadosGoogleSheets('atualizar_config', config);
     alert('✅ Configurações salvas!');
 }
 
-function salvarPontuacao(event) {
+async function salvarPontuacao(event) {
     event.preventDefault();
 
     let config = obterConfiguracao();
@@ -540,6 +574,7 @@ function salvarPontuacao(event) {
     config.pontos_exato = parseInt(document.getElementById('pontos-exato').value);
 
     salvarDados('config', config);
+    await enviarDadosGoogleSheets('atualizar_config', config);
     recalcularPontos();
     alert('✅ Pontuação atualizada!');
 }

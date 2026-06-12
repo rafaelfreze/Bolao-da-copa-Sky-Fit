@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostico - Bolao Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Diagnostico da Planilha</h1>
+            <div class="form-card">
+                <p>Esta pagina testa se o Apps Script esta devolvendo os dados online para qualquer navegador.</p>
+                <button class="btn btn-primary" onclick="executarDiagnostico()">TESTAR AGORA</button>
+                <pre id="resultado-diagnostico" style="white-space: pre-wrap; margin-top: 1.5rem;">Carregando...</pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const GOOGLE_SCRIPT_URL_DIAGNOSTICO = 'https://script.google.com/macros/s/AKfycbwME2l0eYH3Y0i6akgXvTZMQViLaGNo10fo8Jav9AKp1Fc_7GgFHNuigbMn31kp_QJb/exec';
+
+        function montarUrl(action, callback) {
+            const url = new URL(GOOGLE_SCRIPT_URL_DIAGNOSTICO);
+            url.searchParams.set('action', action);
+            url.searchParams.set('callback', callback);
+            url.searchParams.set('_t', Date.now());
+            return url.toString();
+        }
+
+        function jsonp(action) {
+            return new Promise((resolve, reject) => {
+                const callback = `diag_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+                const script = document.createElement('script');
+                const timeout = setTimeout(() => {
+                    cleanup();
+                    reject(new Error(`Tempo esgotado em action=${action}`));
+                }, 30000);
+
+                function cleanup() {
+                    clearTimeout(timeout);
+                    delete window[callback];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
+
+                window[callback] = dados => {
+                    cleanup();
+                    resolve(dados);
+                };
+
+                script.onerror = () => {
+                    cleanup();
+                    reject(new Error(`Falha ao carregar action=${action}`));
+                };
+
+                script.src = montarUrl(action, callback);
+                document.head.appendChild(script);
+            });
+        }
+
+        async function executarDiagnostico() {
+            const saida = document.getElementById('resultado-diagnostico');
+            saida.textContent = 'Testando leitura online...';
+
+            try {
+                const versao = await jsonp('versao');
+                const dados = await jsonp('publico');
+                const participantes = Array.isArray(dados.participantes) ? dados.participantes.length : 0;
+                const palpites = Array.isArray(dados.palpites) ? dados.palpites.length : 0;
+                const jogos = Array.isArray(dados.jogos) ? dados.jogos.length : 0;
+                const resultados = Array.isArray(dados.resultados) ? dados.resultados.length : 0;
+
+                saida.textContent =
+                    `OK - Apps Script respondeu.\n\n` +
+                    `Versao: ${(versao && versao.versao) || 'sem versao'}\n` +
+                    `Modo: ${(dados && dados.modo) || 'sem modo'}\n` +
+                    `Jogos: ${jogos}\n` +
+                    `Participantes: ${participantes}\n` +
+                    `Palpites: ${palpites}\n` +
+                    `Resultados: ${resultados}\n\n` +
+                    `Se aqui aparece numeros corretos, o site esta lendo online.\n` +
+                    `Se aqui aparece zero, a planilha dessa URL esta vazia ou a URL esta apontando para outra implantacao.`;
+            } catch (error) {
+                saida.textContent =
+                    `ERRO NA LEITURA ONLINE\n\n` +
+                    `${error.message || error}\n\n` +
+                    `Corrija no Apps Script: Implantar > Gerenciar implantacoes > Editar > Nova versao > Executar como Eu > Acesso Qualquer pessoa > Implantar.`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', executarDiagnostico);
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -53,19 +53,14 @@
                                 id="whatsapp" 
                                 name="whatsapp" 
                                 required 
+                                inputmode="numeric"
+                                minlength="11"
+                                maxlength="15"
+                                pattern="[0-9 ()-]{11,15}"
                                 placeholder="(11) 99999-9999"
                             >
                         </div>
 
-                        <div class="form-group">
-                            <label for="email">Email (opcional)</label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email" 
-                                placeholder="seu@email.com"
-                            >
-                        </div>
                     </fieldset>
 
                     <fieldset>
@@ -147,7 +142,7 @@
                         </div>
                     </fieldset>
 
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn-submit-palpite">
                         REGISTRAR PALPITE
                     </button>
                 </form>
@@ -190,6 +185,17 @@
                 </div>
 
                 <div class="payment-status">
+                    <a 
+                        id="btn-comprovante-whatsapp"
+                        class="btn btn-primary btn-lg btn-block"
+                        href="#"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        ENVIAR COMPROVANTE PELO WHATSAPP
+                    </a>
+                    <p class="help-text">Contato para comprovante: (67) 99205-3023</p>
+
                     <button type="button" class="btn btn-success btn-lg btn-block" onclick="marcarComoPago()">
                         ✅ JÁ FIZ O PAGAMENTO
                     </button>
@@ -218,20 +224,39 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="seed-jogos-2026.js?v=20260612-ranking11"></script>
+    <script src="script.js?v=20260612-ranking11"></script>
     <script>
         let jogoSelecionado = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            await carregarDadosOnlineObrigatorios();
             carregarConfigPagamento();
             carregarMeusPalpites();
+            selecionarJogoDaUrl();
+            corrigirTextosVisiveisDaPagina();
         });
+
+        function selecionarJogoDaUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const jogoId = params.get('jogo');
+            if (!jogoId) return;
+
+            const jogos = obterDados('jogos') || [];
+            const jogo = jogos.find(item => String(item.id) === String(jogoId));
+            if (!jogo) return;
+
+            document.getElementById('grupo').value = jogo.grupo || jogo.fase || '';
+            carregarJogosDoGrupo();
+            document.getElementById('jogo').value = jogo.id;
+            document.getElementById('jogo').dispatchEvent(new Event('change'));
+            document.getElementById('placar_a').focus();
+        }
 
         function carregarJogosDoGrupo() {
             const grupoSelecionado = document.getElementById('grupo').value;
             const jogoSelect = document.getElementById('jogo');
             const jogos = obterDados('jogos') || [];
-            const agora = new Date();
 
             jogoSelect.innerHTML = '<option value="">-- Selecione um jogo --</option>';
 
@@ -241,10 +266,13 @@
 
             // Se é um grupo (A-L), filtrar por grupo
             if (grupoSelecionado.match(/^[A-L]$/)) {
-                jogosFiltrando = jogos.filter(j => j.grupo === grupoSelecionado && j.ativo);
+                jogosFiltrando = jogos.filter(j => {
+                    const faseGruposSemGrupo = !j.grupo && j.fase === 'Fase de Grupos';
+                    return (j.grupo === grupoSelecionado || faseGruposSemGrupo) && j.ativo && palpiteAindaPermitido(j);
+                });
             } else {
                 // Se é uma fase eliminatória
-                jogosFiltrando = jogos.filter(j => j.fase === grupoSelecionado && j.ativo);
+                jogosFiltrando = jogos.filter(j => j.fase === grupoSelecionado && j.ativo && palpiteAindaPermitido(j));
             }
 
             if (jogosFiltrando.length === 0) {
@@ -252,15 +280,10 @@
                 return;
             }
 
-            jogosFiltrando.forEach(jogo => {
-                const dataJogo = new Date(jogo.data + 'T' + jogo.hora);
-                const dataFormatada = dataJogo.toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
+            jogosFiltrando
+                .sort((a, b) => (obterDataHoraJogo(a) || 0) - (obterDataHoraJogo(b) || 0))
+                .forEach(jogo => {
+                const dataFormatada = formatarDataHoraJogo(jogo);
                 const option = document.createElement('option');
                 option.value = jogo.id;
                 option.textContent = `${jogo.time_a} vs ${jogo.time_b} - ${dataFormatada}`;
@@ -271,46 +294,45 @@
         document.getElementById('jogo').addEventListener('change', function() {
             const jogoId = parseInt(this.value);
             const jogos = obterDados('jogos') || [];
-            jogoSelecionado = jogos.find(j => j.id === jogoId);
+            jogoSelecionado = jogos.find(j => Number(j.id) === Number(jogoId));
             
             if (jogoSelecionado) {
                 document.getElementById('label-time-a').textContent = jogoSelecionado.time_a;
                 document.getElementById('label-time-b').textContent = jogoSelecionado.time_b;
 
-                const dataJogo = new Date(jogoSelecionado.data + 'T' + jogoSelecionado.hora);
-                const dataFormatada = dataJogo.toLocaleDateString('pt-BR', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                const dataFormatada = formatarDataHoraJogo(jogoSelecionado);
 
                 const grupoInfo = jogoSelecionado.grupo ? `Grupo ${jogoSelecionado.grupo}` : jogoSelecionado.fase;
+                const palpiteAberto = palpiteAindaPermitido(jogoSelecionado);
+                document.getElementById('btn-submit-palpite').disabled = !palpiteAberto;
 
                 document.getElementById('game-details').innerHTML = `
-                    <strong>${jogoSelecionado.time_a} vs ${jogoSelecionado.time_b}</strong><br>
+                    <strong>${obterBandeiraTime(jogoSelecionado.time_a)} ${jogoSelecionado.time_a} × ${jogoSelecionado.time_b} ${obterBandeiraTime(jogoSelecionado.time_b)}</strong><br>
                     📅 ${dataFormatada}<br>
                     📍 ${jogoSelecionado.local}<br>
                     🎯 ${grupoInfo}
                 `;
 
                 document.getElementById('game-info').style.display = 'block';
+                if (!palpiteAberto) {
+                    document.getElementById('game-details').insertAdjacentHTML('beforeend', `<br><strong>${obterMensagemBloqueioPalpite(jogoSelecionado)}</strong>`);
+                }
             }
         });
 
-        document.getElementById('palpite-form').addEventListener('submit', function(e) {
+        document.getElementById('palpite-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            salvarPalpite();
+            await salvarPalpite();
         });
 
-        function salvarPalpite() {
+        async function salvarPalpite() {
             const nome = document.getElementById('nome').value.trim();
-            const whatsapp = document.getElementById('whatsapp').value.trim();
-            const email = document.getElementById('email').value.trim();
+            const whatsappInput = document.getElementById('whatsapp');
+            const whatsapp = normalizarContato(whatsappInput.value);
             const placar_a = parseInt(document.getElementById('placar_a').value);
             const placar_b = parseInt(document.getElementById('placar_b').value);
+            const submitBtn = document.querySelector('#palpite-form button[type="submit"]');
+            const textoOriginal = submitBtn.textContent;
 
             if (!jogoSelecionado) {
                 alert('Selecione um jogo!');
@@ -318,26 +340,58 @@
             }
 
             if (!nome || !whatsapp) {
-                alert('Preencha todos os campos obrigatórios!');
+                alert('Preencha todos os campos obrigatorios!');
                 return;
             }
 
+            if (!validarWhatsApp(whatsapp)) {
+                alert('Digite o WhatsApp com DDD e 11 digitos. Exemplo: 67992053023');
+                whatsappInput.focus();
+                return;
+            }
+
+            whatsappInput.value = formatarWhatsApp(whatsapp);
+
+            const ultimaSync = Number(localStorage.getItem('bolao_last_sync') || 0);
+            const precisaAtualizarAntesDeSalvar = !ultimaSync || Date.now() - ultimaSync > 60000;
+            if (precisaAtualizarAntesDeSalvar) {
+                const onlineOk = await carregarDadosOnlineObrigatorios({ timeoutMs: 10000 });
+                if (!onlineOk) {
+                    alert('Nao consegui conectar com a planilha online agora. Tente novamente em instantes.');
+                    return;
+                }
+            }
+
+            const jogoAtualizado = obterJogoPorId(jogoSelecionado.id) || jogoSelecionado;
+            if (!palpiteAindaPermitido(jogoAtualizado)) {
+                alert(obterMensagemBloqueioPalpite(jogoAtualizado));
+                return;
+            }
+            jogoSelecionado = jogoAtualizado;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SALVANDO...';
+
             // Criar ou obter participante
             let participantes = obterDados('participantes') || [];
-            let participante = participantes.find(p => p.nome === nome && p.whatsapp === whatsapp);
+            let participante = participantes.find(p => palpitePertenceAoParticipante({ nome, whatsapp }, p));
+            let participanteNovo = false;
 
             if (!participante) {
                 participante = {
                     id: Date.now(),
                     nome: nome,
                     whatsapp: whatsapp,
-                    email: email,
                     data_inscricao: new Date().toISOString(),
                     pago: false,
                     pontos: 0,
                     acertos: 0
                 };
                 participantes.push(participante);
+                salvarDados('participantes', participantes);
+                participanteNovo = true;
+            } else if (!validarWhatsApp(participante.whatsapp)) {
+                participante.whatsapp = whatsapp;
                 salvarDados('participantes', participantes);
             }
 
@@ -348,7 +402,6 @@
                 participante_id: participante.id,
                 nome: nome,
                 whatsapp: whatsapp,
-                email: email,
                 jogo_id: jogoSelecionado.id,
                 time_a: jogoSelecionado.time_a,
                 time_b: jogoSelecionado.time_b,
@@ -360,31 +413,51 @@
             palpites.push(novoPalpite);
             salvarDados('palpites', palpites);
 
+            if (participanteNovo) {
+                await enviarDadosGoogleSheets('adicionar_participante', participante);
+            } else {
+                await enviarDadosGoogleSheets('atualizar_participante', participante);
+            }
+
+            const enviado = await enviarDadosGoogleSheets('adicionar_palpite', novoPalpite);
+            if (!enviado) {
+                salvarDados('palpites', palpites.filter(item => item.id !== novoPalpite.id));
+                if (participanteNovo) {
+                    salvarDados('participantes', participantes.filter(item => item.id !== participante.id));
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = textoOriginal;
+                alert('Nao consegui enviar seu palpite para a planilha online agora. Tente novamente em instantes.');
+                return;
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = textoOriginal;
+
+            if (!enviado) {
+                alert('⚠️ Seu palpite foi salvo neste navegador, mas não consegui enviar para a planilha agora. Tente novamente se ele não aparecer no ranking.');
+            }
+
             // Mostrar mensagem de sucesso
             document.getElementById('palpite-form').style.display = 'none';
             document.getElementById('sucesso-msg').style.display = 'block';
             document.getElementById('pagamento-section').style.display = 'block';
+            document.getElementById('btn-comprovante-whatsapp').href = montarLinkComprovanteWhatsapp({
+                nome,
+                whatsapp,
+                jogo: jogoSelecionado
+            });
 
             carregarMeusPalpites();
             document.querySelector('main').scrollIntoView({ behavior: 'smooth' });
         }
 
         function copiarChavePix() {
-            const chavePix = document.getElementById('chave-pix');
-            chavePix.select();
-            document.execCommand('copy');
-            
-            const btn = event.target;
-            const textoOriginal = btn.textContent;
-            btn.textContent = '✅ Copiado!';
-            setTimeout(() => {
-                btn.textContent = textoOriginal;
-            }, 2000);
+            copiarTexto(obterCodigoPix(), event.target);
         }
 
-        function marcarComoPago() {
+        async function marcarComoPago() {
             const nome = document.getElementById('nome').value.trim();
-            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const whatsapp = normalizarContato(document.getElementById('whatsapp').value);
 
             if (!nome || !whatsapp) {
                 alert('Preencha seu nome e WhatsApp!');
@@ -392,12 +465,13 @@
             }
 
             let participantes = obterDados('participantes') || [];
-            const participante = participantes.find(p => p.nome === nome && p.whatsapp === whatsapp);
+            const participante = participantes.find(p => palpitePertenceAoParticipante({ nome, whatsapp }, p));
 
             if (participante) {
                 participante.pendente_pagamento = true;
                 participante.data_pagamento_solicitado = new Date().toISOString();
                 salvarDados('participantes', participantes);
+                await enviarDadosGoogleSheets('atualizar_participante', participante);
 
                 alert('✅ Pagamento marcado como pendente de confirmação!\n\nO administrador receberá sua solicitação.');
                 voltarFormulario();
@@ -416,21 +490,24 @@
 
         function carregarConfigPagamento() {
             const config = obterConfiguracao();
-            document.getElementById('chave-pix').value = config.chave_pix;
+            const valorPalpite = formatarMoeda(config.valor_palpite);
+            document.getElementById('chave-pix').value = obterCodigoPix();
             document.getElementById('recebedor-pix').textContent = config.recebedor_pix;
-            document.getElementById('valor-palpite').textContent = formatarMoeda(config.valor_palpite);
+            document.getElementById('valor-palpite').textContent = valorPalpite;
+            document.getElementById('btn-comprovante-whatsapp').href = montarLinkComprovanteWhatsapp();
+            document.getElementById('btn-submit-palpite').textContent = `✅ REGISTRAR PALPITE - ${valorPalpite} VIA PIX`;
         }
 
         function carregarMeusPalpites() {
             const nome = document.getElementById('nome').value.trim();
-            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const whatsapp = normalizarContato(document.getElementById('whatsapp').value);
 
             if (!nome || !whatsapp) {
                 return;
             }
 
             const palpites = obterDados('palpites') || [];
-            const meusPalpites = palpites.filter(p => p.nome === nome && p.whatsapp === whatsapp);
+            const meusPalpites = palpites.filter(p => palpitePertenceAoParticipante(p, { nome, whatsapp }));
 
             const container = document.getElementById('meus-palpites-list');
 
@@ -454,7 +531,12 @@
         }
 
         document.getElementById('nome').addEventListener('blur', carregarMeusPalpites);
-        document.getElementById('whatsapp').addEventListener('blur', carregarMeusPalpites);
+        document.getElementById('whatsapp').addEventListener('blur', function() {
+            if (validarWhatsApp(this.value)) {
+                this.value = formatarWhatsApp(this.value);
+            }
+            carregarMeusPalpites();
+        });
     </script>
 </body>
 </html>

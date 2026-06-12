@@ -1,22 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolão Online - Copa 2026</title>
+    <title>BolÃ£o Online - Copa 2026</title>
     <link rel="stylesheet" href="style.css">
-    <script src="seed-jogos-2026-completo.js"></script>
 </head>
 <body>
-    <!-- Navegação -->
+    <!-- NavegaÃ§Ã£o -->
     <nav class="navbar">
         <div class="container">
             <div class="navbar-brand">
-                <span class="logo-emoji">⚽</span>
-                <span class="logo-text">Bolão Online</span>
+                <span class="logo-emoji">âš½</span>
+                <span class="logo-text">BolÃ£o Online</span>
             </div>
             <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link active">Início</a></li>
+                <li><a href="index.html" class="nav-link active">InÃ­cio</a></li>
                 <li><a href="palpites.html" class="nav-link">Palpites</a></li>
                 <li><a href="ranking.html" class="nav-link">Ranking</a></li>
                 <li><a href="tabela.html" class="nav-link">Tabela</a></li>
@@ -29,51 +28,48 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-title-section">
-                <h1 class="hero-title" id="bolao-nome">Bolão Online</h1>
+                <h1 class="hero-title" id="bolao-nome">BolÃ£o Online</h1>
                 <p class="hero-subtitle">Copa do Mundo 2026</p>
             </div>
             <div class="hero-decoration">
-                <span class="deco-flag">🇺🇸</span>
-                <span class="deco-flag">🇨🇦</span>
-                <span class="deco-flag">🇲🇽</span>
+                <span class="deco-flag">ðŸ‡ºðŸ‡¸</span>
+                <span class="deco-flag">ðŸ‡¨ðŸ‡¦</span>
+                <span class="deco-flag">ðŸ‡²ðŸ‡½</span>
             </div>
         </div>
     </section>
 
-    <!-- Info Cards -->
-    <section class="info-section">
+    <!-- Resumo -->
+    <section class="home-summary-section">
         <div class="container">
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-icon">💰</div>
-                    <h3>Valor do Palpite</h3>
-                    <p class="info-value" id="info-valor">R$ 10,00</p>
+            <div id="home-prize"></div>
+            <div class="home-mini-stats">
+                <div>
+                    <span>Valor do palpite</span>
+                    <strong id="info-valor">R$ 10,00</strong>
                 </div>
-                <div class="info-card">
-                    <div class="info-icon">🏆</div>
-                    <h3>Prêmio Acumulado</h3>
-                    <p class="info-value" id="info-premio">R$ 0,00</p>
+                <div>
+                    <span>Participantes</span>
+                    <strong id="info-participantes">0</strong>
                 </div>
-                <div class="info-card">
-                    <div class="info-icon">👥</div>
-                    <h3>Participantes</h3>
-                    <p class="info-value" id="info-participantes">0</p>
+                <div>
+                    <span>Pagos</span>
+                    <strong id="info-pagos">0</strong>
                 </div>
-                <div class="info-card">
-                    <div class="info-icon">✅</div>
-                    <h3>Pagos</h3>
-                    <p class="info-value" id="info-pagos">0</p>
+                <div>
+                    <span>PrÃªmio final</span>
+                    <strong id="info-premio">R$ 0,00</strong>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Próximo Jogo -->
+    <!-- PrÃ³ximo Jogo -->
     <section class="next-game-section">
         <div class="container">
-            <h2 class="section-title">⚡ Próximo Jogo</h2>
+            <div class="section-kicker">Jogos da semana</div>
             <div class="next-game-card" id="next-game">
-                <div class="loading-text">Carregando próximo jogo...</div>
+                <div class="loading-text">Carregando jogos da semana...</div>
             </div>
         </div>
     </section>
@@ -82,58 +78,150 @@
     <section class="cta-section">
         <div class="container">
             <div class="cta-box">
-                <h2>Pronto para começar?</h2>
-                <p>Faça seu palpite agora e concorra ao prêmio!</p>
+                <h2>Pronto para comeÃ§ar?</h2>
+                <p>FaÃ§a seu palpite agora e concorra ao prÃªmio!</p>
                 <a href="palpites.html" class="btn btn-primary btn-lg">FAZER PALPITE</a>
             </div>
         </div>
     </section>
 
-    <!-- Rodapé -->
+    <!-- RodapÃ© -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 Bolão Online. Todos os direitos reservados.</p>
-            <p>Copa do Mundo 2026 - Estados Unidos, Canadá e México</p>
+            <p>&copy; 2026 BolÃ£o Online. Todos os direitos reservados.</p>
+            <p>Copa do Mundo 2026 - Estados Unidos, CanadÃ¡ e MÃ©xico</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="seed-jogos-2026.js?v=20260612-ranking11"></script>
+    <script src="script.js?v=20260612-ranking11"></script>
     <script>
-        // Carregar dados da página inicial
-        document.addEventListener('DOMContentLoaded', function() {
+        // Carregar dados da pÃ¡gina inicial
+        document.addEventListener('DOMContentLoaded', async function() {
+            const onlineOk = await carregarDadosOnlineObrigatorios();
             carregarDadosInicio();
-            carregarProximoJogo();
+            carregarJogosDaSemana();
+            if (!onlineOk) {
+                document.getElementById('next-game').innerHTML = `
+                    <div class="game-info">
+                        <p class="text-center">Nao consegui ler a planilha online agora. Atualize a pagina ou confira a implantacao do Apps Script.</p>
+                    </div>
+                `;
+            }
+            corrigirTextosVisiveisDaPagina();
         });
 
         function carregarDadosInicio() {
             const config = obterConfiguracao();
-            const participantes = obterDados('participantes') || [];
-            const pagos = participantes.filter(p => p.pago).length;
-            const valor = config.valor_palpite;
-            const premio = pagos * valor;
+            const resumo = obterResumoFinanceiro();
 
             document.getElementById('bolao-nome').textContent = config.nome_bolao;
-            document.getElementById('info-valor').textContent = formatarMoeda(valor);
-            document.getElementById('info-premio').textContent = formatarMoeda(premio);
-            document.getElementById('info-participantes').textContent = participantes.length;
-            document.getElementById('info-pagos').textContent = pagos;
+            document.getElementById('home-prize').innerHTML = renderizarCardPremio();
+            document.getElementById('info-valor').textContent = formatarMoeda(resumo.valorPalpite);
+            document.getElementById('info-premio').textContent = formatarMoeda(resumo.premio);
+            document.getElementById('info-participantes').textContent = resumo.participantes;
+            document.getElementById('info-pagos').textContent = resumo.pagos;
+        }
+
+        function obterInicioSemana(dataBase) {
+            const data = new Date(dataBase);
+            const diaSemana = data.getDay();
+            const deslocamento = diaSemana === 0 ? -6 : 1 - diaSemana;
+            data.setDate(data.getDate() + deslocamento);
+            data.setHours(0, 0, 0, 0);
+            return data;
+        }
+
+        function obterFimSemana(inicioSemana) {
+            const fim = new Date(inicioSemana);
+            fim.setDate(fim.getDate() + 6);
+            fim.setHours(23, 59, 59, 999);
+            return fim;
+        }
+
+        function obterJogosDaSemana(jogos, inicio, fim) {
+            return jogos
+                .map(jogo => ({ jogo, dataJogo: obterDataHoraJogo(jogo) }))
+                .filter(item => item.dataJogo && item.dataJogo >= inicio && item.dataJogo <= fim && !item.jogo.resultado && item.jogo.ativo !== false && palpiteAindaPermitido(item.jogo))
+                .sort((a, b) => a.dataJogo - b.dataJogo);
+        }
+
+        function carregarJogosDaSemana() {
+            const jogos = obterDados('jogos') || [];
+            const hoje = new Date();
+            let inicioSemana = obterInicioSemana(hoje);
+            let fimSemana = obterFimSemana(inicioSemana);
+            let jogosSemana = obterJogosDaSemana(jogos, inicioSemana, fimSemana);
+
+            if (jogosSemana.length === 0) {
+                const futuros = jogos
+                    .map(jogo => ({ jogo, dataJogo: obterDataHoraJogo(jogo) }))
+                    .filter(item => item.dataJogo && item.dataJogo >= hoje && !item.jogo.resultado && item.jogo.ativo !== false && palpiteAindaPermitido(item.jogo))
+                    .sort((a, b) => a.dataJogo - b.dataJogo);
+
+                if (futuros.length > 0) {
+                    inicioSemana = obterInicioSemana(futuros[0].dataJogo);
+                    fimSemana = obterFimSemana(inicioSemana);
+                    jogosSemana = obterJogosDaSemana(jogos, inicioSemana, fimSemana);
+                }
+            }
+
+            const container = document.getElementById('next-game');
+            const periodo = `${inicioSemana.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} a ${fimSemana.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+
+            if (jogosSemana.length === 0) {
+                container.innerHTML = `
+                    <div class="game-info">
+                        <p class="text-center">Nenhum jogo disponivel nesta semana.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="weekly-games-header">
+                    <span>${periodo}</span>
+                    <strong>${jogosSemana.length} jogos</strong>
+                </div>
+                <div class="weekly-games-grid">
+                    ${jogosSemana.map(({ jogo }) => {
+                        const brasil = jogoEnvolveTime(jogo, 'Brasil');
+                        return `
+                            <a class="weekly-game-card ${brasil ? 'is-brasil' : ''}" href="palpites.html?jogo=${encodeURIComponent(jogo.id)}">
+                                <div class="weekly-game-date">${formatarDataHoraJogo(jogo)}</div>
+                                <div class="weekly-game-teams">
+                                    <span>${obterBandeiraTime(jogo.time_a)} ${jogo.time_a}</span>
+                                    <strong>x</strong>
+                                    <span>${obterBandeiraTime(jogo.time_b)} ${jogo.time_b}</span>
+                                </div>
+                                <div class="weekly-game-meta">${jogo.grupo ? `Grupo ${jogo.grupo}` : jogo.fase}</div>
+                            </a>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
 
         function carregarProximoJogo() {
             const jogos = obterDados('jogos') || [];
             const agora = new Date();
 
-            // Encontrar próximo jogo que não tenha resultado
-            const proximoJogo = jogos.find(j => {
-                const dataJogo = new Date(j.data + 'T' + j.hora);
-                return dataJogo > agora && !j.resultado;
-            });
+            // Encontrar prÃ³ximo jogo que nÃ£o tenha resultado
+            const candidatos = jogos
+                .map(jogo => ({ jogo, dataJogo: obterDataHoraJogo(jogo) }))
+                .filter(item => item.dataJogo && item.dataJogo > agora && !item.jogo.resultado && item.jogo.ativo !== false && palpiteAindaPermitido(item.jogo))
+                .sort((a, b) => a.dataJogo - b.dataJogo);
+
+            const candidatosBrasil = candidatos.filter(item => jogoEnvolveTime(item.jogo, 'Brasil'));
+            const escolhido = candidatosBrasil.length ? candidatosBrasil[0] : candidatos[0];
+            const proximoJogo = escolhido ? escolhido.jogo : null;
+            const proximaData = escolhido ? escolhido.dataJogo : null;
+            const destaqueBrasil = proximoJogo ? jogoEnvolveTime(proximoJogo, 'Brasil') : false;
 
             const container = document.getElementById('next-game');
 
-            if (proximoJogo) {
-                const dataJogo = new Date(proximoJogo.data + 'T' + proximoJogo.hora);
-                const dataFormatada = dataJogo.toLocaleDateString('pt-BR', {
+            if (proximoJogo && proximaData) {
+                const dataFormatada = proximaData.toLocaleDateString('pt-BR', {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
@@ -143,20 +231,30 @@
                 });
 
                 container.innerHTML = `
-                    <div class="game-info">
-                        <div class="game-teams-big">
+                    <div class="next-match-panel">
+                        <div class="next-match-meta">
+                            <span>${dataFormatada}</span>
+                            <strong>${destaqueBrasil ? 'Brasil' : 'PrÃ³ximo'}</strong>
+                        </div>
+                        <div class="next-match-score">
                             <div class="team-big">
+                                <span class="team-flag">${obterBandeiraTime(proximoJogo.time_a)}</span>
                                 <span class="team-name">${proximoJogo.time_a}</span>
                             </div>
-                            <div class="vs-big">vs</div>
+                            <div class="score-preview">
+                                <span>0</span>
+                                <em>Ã—</em>
+                                <span>0</span>
+                                <small>seu palpite</small>
+                            </div>
                             <div class="team-big">
+                                <span class="team-flag">${obterBandeiraTime(proximoJogo.time_b)}</span>
                                 <span class="team-name">${proximoJogo.time_b}</span>
                             </div>
                         </div>
                         <div class="game-details">
-                            <p><strong>📅 ${dataFormatada}</strong></p>
-                            <p><strong>📍 ${proximoJogo.local}</strong></p>
-                            <p><strong>🎯 Grupo ${proximoJogo.grupo}</strong></p>
+                            <p><strong>Local: ${proximoJogo.local}</strong></p>
+                            <p><strong>${proximoJogo.grupo ? `Grupo ${proximoJogo.grupo}` : proximoJogo.fase}</strong></p>
                         </div>
                         <a href="palpites.html" class="btn btn-primary">FAZER PALPITE</a>
                     </div>
@@ -164,7 +262,7 @@
             } else {
                 container.innerHTML = `
                     <div class="game-info">
-                        <p class="text-center">Nenhum jogo disponível no momento.</p>
+                        <p class="text-center">Nenhum jogo disponÃ­vel no momento.</p>
                     </div>
                 `;
             }
@@ -172,3 +270,4 @@
     </script>
 </body>
 </html>
+

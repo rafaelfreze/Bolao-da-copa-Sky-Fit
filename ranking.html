@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -28,6 +28,10 @@
     <main class="main-content">
         <div class="container">
             <h1 class="page-title">Ranking</h1>
+
+            <div id="ranking-prize"></div>
+
+            <div id="ranking-alert" class="ranking-alert" style="display: none;"></div>
 
             <!-- Filtros -->
             <div class="filter-section">
@@ -71,7 +75,7 @@
                         <p class="stat-value" id="stat-pagos">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Total Arrecadado</h3>
+                        <h3>Saldo do Premio</h3>
                         <p class="stat-value" id="stat-arrecadado">R$ 0,00</p>
                     </div>
                     <div class="stat-card">
@@ -90,13 +94,21 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="seed-jogos-2026.js?v=20260612-ranking11"></script>
+    <script src="script.js?v=20260612-ranking11"></script>
     <script>
         let filtroAtual = 'todos';
 
-        document.addEventListener('DOMContentLoaded', function() {
-            carregarRanking();
+        document.addEventListener('DOMContentLoaded', async function() {
             setupFiltros();
+            const onlineOk = await carregarDadosOnlineObrigatorios();
+            carregarRanking();
+            if (!onlineOk) {
+                const alert = document.getElementById('ranking-alert');
+                alert.style.display = 'block';
+                alert.textContent = 'Nao consegui ler a planilha online agora. Atualize a pagina ou confira a implantacao do Apps Script.';
+            }
+            corrigirTextosVisiveisDaPagina();
         });
 
         function setupFiltros() {
@@ -110,23 +122,108 @@
             });
         }
 
+        function formatarResumoPalpiteRanking(palpite) {
+            if (!palpite) {
+                return 'Palpite sem jogo definido';
+            }
+
+            let timeA = palpite.time_a;
+            let timeB = palpite.time_b;
+
+            if (palpite.jogo_id) {
+                const jogos = obterDados('jogos') || [];
+                const jogo = jogos.find(item => String(item.id) === String(palpite.jogo_id));
+                if (jogo) {
+                    timeA = jogo.time_a || timeA;
+                    timeB = jogo.time_b || timeB;
+                }
+            }
+
+            if (!timeA || !timeB) {
+                return `Jogo ${palpite.jogo_id || ''} - ${Number(palpite.placar_a) || 0} x ${Number(palpite.placar_b) || 0}`.trim();
+            }
+
+            const placarA = Number(palpite.placar_a) || 0;
+            const placarB = Number(palpite.placar_b) || 0;
+
+            return `${obterBandeiraTime(timeA)} ${timeA} ${placarA} x ${placarB} ${timeB} ${obterBandeiraTime(timeB)}`;
+        }
+
+        function renderizarPalpitesRanking(palpitesDetalhes) {
+            const palpitesValidos = (palpitesDetalhes || []).filter(Boolean);
+
+            if (palpitesValidos.length === 0) {
+                return '<small class="ranking-bets muted">Sem palpite registrado</small>';
+            }
+
+            const linhas = palpitesValidos.map(item => `<span>${item}</span>`).join('');
+
+            return `<small class="ranking-bets">${linhas}</small>`;
+        }
+
         function carregarRanking() {
+            recalcularPontos();
             const participantes = obterDados('participantes') || [];
             const palpites = obterDados('palpites') || [];
+            document.getElementById('ranking-prize').innerHTML = renderizarCardPremio();
 
-            // Calcular ranking
-            const ranking = participantes.map(p => {
-                const userPalpites = palpites.filter(pal => pal.nome === p.nome && pal.whatsapp === p.whatsapp);
-                const pontos = userPalpites.reduce((total, pal) => total + (pal.pontos || 0), 0);
-                const acertos = userPalpites.filter(pal => pal.pontos > 0).length;
+            const rankingMap = new Map();
 
-                return {
-                    ...p,
-                    palpites_total: userPalpites.length,
-                    pontos: pontos,
-                    acertos: acertos
-                };
+            function obterLinhaRanking(chave, base) {
+                if (!rankingMap.has(chave)) {
+                    rankingMap.set(chave, {
+                        ...(base || {}),
+                        nome: (base && base.nome) || 'Participante',
+                        whatsapp: (base && base.whatsapp) || '',
+                        pago: Boolean(base && base.pago),
+                        pendente_pagamento: base ? Boolean(base.pendente_pagamento || !base.pago) : true,
+                        palpites_total: 0,
+                        palpites_detalhes: [],
+                        pontos: 0,
+                        acertos: 0
+                    });
+                }
+
+                return rankingMap.get(chave);
+            }
+
+            function mesclarParticipanteNaLinha(linha, participante) {
+                if (!participante) return;
+                if ((!linha.nome || linha.nome === 'Participante') && participante.nome) linha.nome = participante.nome;
+                if (!linha.whatsapp && participante.whatsapp) linha.whatsapp = participante.whatsapp;
+                linha.pago = Boolean(linha.pago || participante.pago);
+                linha.pendente_pagamento = linha.pago ? false : Boolean(linha.pendente_pagamento || participante.pendente_pagamento || !participante.pago);
+            }
+
+            participantes.forEach(participante => {
+                const chave = obterChavePessoa(participante);
+                if (!chave) return;
+                const linha = obterLinhaRanking(chave, participante);
+                mesclarParticipanteNaLinha(linha, participante);
             });
+
+            palpites.forEach(palpite => {
+                const participante = participantes.find(p => palpitePertenceAoParticipante(palpite, p));
+                const chave = obterChavePessoa(participante || palpite) || `palpite-${palpite.id}`;
+                const linha = obterLinhaRanking(chave, participante || palpite);
+                const pontosPalpite = Number(palpite.pontos) || 0;
+                mesclarParticipanteNaLinha(linha, participante);
+                linha.palpites_total += 1;
+                linha.palpites_detalhes.push(formatarResumoPalpiteRanking(palpite));
+                linha.pontos += pontosPalpite;
+                if (pontosPalpite > 0) linha.acertos += 1;
+            });
+
+            const ranking = Array.from(rankingMap.values());
+
+            const pendentesPagamento = ranking.filter(p => !p.pago || p.pendente_pagamento).length;
+            const alert = document.getElementById('ranking-alert');
+            if (pendentesPagamento > 0) {
+                alert.style.display = 'block';
+                alert.innerHTML = `💰 <strong>${pendentesPagamento} ${pendentesPagamento === 1 ? 'palpite pendente' : 'palpites pendentes'}</strong> não entram no prêmio confirmado. Confirme o pagamento no painel admin.`;
+            } else {
+                alert.style.display = 'none';
+            }
 
             // Ordenar por pontos
             ranking.sort((a, b) => b.pontos - a.pontos);
@@ -134,9 +231,9 @@
             // Filtrar conforme seleção
             let filtrado = ranking;
             if (filtroAtual === 'pagos') {
-                filtrado = ranking.filter(p => p.pago);
+                filtrado = ranking.filter(p => p.pago && !p.pendente_pagamento);
             } else if (filtroAtual === 'pendentes') {
-                filtrado = ranking.filter(p => !p.pago);
+                filtrado = ranking.filter(p => !p.pago || p.pendente_pagamento);
             }
 
             // Preencher tabela
@@ -152,15 +249,15 @@
                             </span>
                         </td>
                         <td class="col-nome">
-                            <strong>${p.nome}</strong><br>
-                            <small>${p.whatsapp}</small>
+                            <strong>${p.nome}</strong>
+                            ${renderizarPalpitesRanking(p.palpites_detalhes)}
                         </td>
                         <td class="col-pontos"><strong>${p.pontos}</strong></td>
                         <td class="col-palpites">${p.palpites_total}</td>
                         <td class="col-acertos">${p.acertos}</td>
                         <td class="col-status">
-                            <span class="status-badge ${p.pago ? 'pago' : 'pendente'}">
-                                ${p.pago ? '✅ Pago' : '⏳ Pendente'}
+                            <span class="status-badge ${p.pago && !p.pendente_pagamento ? 'pago' : 'pendente'}">
+                                ${p.pago && !p.pendente_pagamento ? '✅ Pago' : p.pendente_pagamento ? '🔔 Aguardando' : '⏳ Pendente'}
                             </span>
                         </td>
                     </tr>
@@ -171,7 +268,7 @@
             renderizarPodio(ranking.slice(0, 3));
 
             // Atualizar estatísticas
-            atualizarEstatisticas(participantes, palpites);
+            atualizarEstatisticas(ranking, palpites);
         }
 
         function renderizarPodio(top3) {
@@ -225,13 +322,11 @@
         }
 
         function atualizarEstatisticas(participantes, palpites) {
-            const pagos = participantes.filter(p => p.pago).length;
-            const config = obterConfiguracao();
-            const arrecadado = pagos * config.valor_palpite;
+            const resumo = obterResumoFinanceiro();
 
             document.getElementById('stat-participantes').textContent = participantes.length;
-            document.getElementById('stat-pagos').textContent = pagos;
-            document.getElementById('stat-arrecadado').textContent = formatarMoeda(arrecadado);
+            document.getElementById('stat-pagos').textContent = resumo.pagos;
+            document.getElementById('stat-arrecadado').textContent = formatarMoeda(resumo.premio);
             document.getElementById('stat-palpites').textContent = palpites.length;
         }
     </script>

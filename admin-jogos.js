@@ -88,6 +88,10 @@ function formatarDataHoraJogo(data, hora) {
 }
 
 async function enviarJogoGoogleSheets(jogo) {
+    if (typeof enviarDadosGoogleSheets === 'function') {
+        return enviarDadosGoogleSheets('adicionar_jogo', jogo);
+    }
+
     if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
         console.warn('GOOGLE_SCRIPT_URL não definida no script.js');
         return false;
